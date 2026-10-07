@@ -1,14 +1,44 @@
-output: work/designing-for-uncertainty/index.html
-title: Designing for uncertainty: an AI assistant for enterprise automation · Shaun Burley
-description: How I designed an AI assistant that shows how sure it is, what it's doing, and which features are still experiments.
-nav: work
-variants: v1 v2
----
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing for uncertainty: an AI assistant for enterprise automation · Shaun Burley</title>
+<meta name="description" content="How I designed an AI assistant that shows how sure it is, what it's doing, and which features are still experiments.">
+<meta property="og:title" content="Designing for uncertainty: an AI assistant for enterprise automation · Shaun Burley">
+<meta property="og:description" content="How I designed an AI assistant that shows how sure it is, what it's doing, and which features are still experiments.">
+<meta property="og:type" content="website">
+<link rel="icon" href="../../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="../../../assets/css/site.css">
+<link rel="stylesheet" href="../../../assets/css/v2.css">
+<script src="../../../assets/js/v2.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header sticky">
+  <div class="wrap">
+    <a class="site-name" href="../../../v2/">Shaun Burley</a>
+    <p class="site-tagline">I design AI products people can trust.</p>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="../../../v2/#about">About</a></li>
+        <li><a href="../../../v2/#case-studies">Case studies</a></li>
+        <li><a href="../../../v2/#archive">Archive</a></li>
+        <li><a href="../../../v2/#projects">Projects</a></li>
+        <li><a href="../../../v2/#cv">CV</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main">
 <div class="wrap">
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <ol>
-      <li><a href="{home}">Home</a></li>
-      <li><a href="{home}#work">Work</a></li>
+      <li><a href="../../../v2/">Home</a></li>
+      <li><a href="../../../v2/#work">Work</a></li>
       <li aria-current="page">Designing for uncertainty</li>
     </ol>
   </nav>
@@ -30,7 +60,7 @@ variants: v1 v2
     </section>
 
     <figure class="tall">
-      <div class="frame"><img src="{base}assets/img/assistant-intro.webp" alt="The AI assistant in a narrow desktop window. It suggests things it can help with, then answers a request to plan a business trip with a list of steps and offers to fetch the weather, schedule a meeting, file an IT ticket or create a reminder." width="511" height="1394"></div>
+      <div class="frame"><img src="../../../assets/img/assistant-intro.webp" alt="The AI assistant in a narrow desktop window. It suggests things it can help with, then answers a request to plan a business trip with a list of steps and offers to fetch the weather, schedule a meeting, file an IT ticket or create a reminder." width="511" height="1394"></div>
       <figcaption>The assistant answers a broad request with a plan, then offers the specific tasks it can take on.</figcaption>
     </figure>
 
@@ -40,7 +70,7 @@ variants: v1 v2
     </section>
 
     <figure class="wide">
-      <div class="frame scroll-x"><img src="{base}assets/img/assistant-sprint.webp" alt="Sticky notes from the design sprint grouped under three headings: Discover, Learn and Use. Notes include 'Embedded in a product I already am using', 'Ask AI to learn how they can use the product' and 'Expressing intent without needing to translate into another format'." width="1800" height="596" loading="lazy"></div>
+      <div class="frame scroll-x"><img src="../../../assets/img/assistant-sprint.webp" alt="Sticky notes from the design sprint grouped under three headings: Discover, Learn and Use. Notes include 'Embedded in a product I already am using', 'Ask AI to learn how they can use the product' and 'Expressing intent without needing to translate into another format'." width="1800" height="596" loading="lazy"></div>
       <figcaption>Design sprint notes on how people would discover, learn and use the assistant.</figcaption>
     </figure>
 
@@ -54,7 +84,7 @@ variants: v1 v2
       </div>
 
       <figure>
-        <div class="frame"><img src="{base}assets/img/assistant-action-types.webp" alt="A chat in which the assistant connects to a Salesforce integration, offers a pre-built out-of-office automation with a Run button, and offers to try finding an answer on its own with a 'Try it' button. A legend labels the three action types: quick action (Start), pre-built automation (Run) and just-in-time AI automation (Try)." width="977" height="1049" loading="lazy"></div>
+        <div class="frame"><img src="../../../assets/img/assistant-action-types.webp" alt="A chat in which the assistant connects to a Salesforce integration, offers a pre-built out-of-office automation with a Run button, and offers to try finding an answer on its own with a 'Try it' button. A legend labels the three action types: quick action (Start), pre-built automation (Run) and just-in-time AI automation (Try)." width="977" height="1049" loading="lazy"></div>
         <figcaption>Three kinds of action, one visual system. The assistant says plainly when it can't find an automation and offers to try instead.</figcaption>
       </figure>
 
@@ -65,7 +95,7 @@ variants: v1 v2
       </div>
 
       <figure>
-        <div class="frame"><img src="{base}assets/img/assistant-steps.webp" alt="Two states of an automation card. On the left, the list of six completed steps is expanded. On the right, the steps are collapsed and the results are shown instead, with a Hide results button." width="1076" height="491" loading="lazy"></div>
+        <div class="frame"><img src="../../../assets/img/assistant-steps.webp" alt="Two states of an automation card. On the left, the list of six completed steps is expanded. On the right, the steps are collapsed and the results are shown instead, with a Hide results button." width="1076" height="491" loading="lazy"></div>
         <figcaption>Completed steps expand on request; results expand and collapse separately.</figcaption>
       </figure>
 
@@ -76,7 +106,7 @@ variants: v1 v2
       </div>
 
       <figure class="small">
-        <div class="frame"><img src="{base}assets/img/assistant-try.webp" alt="An action card reading 'Place order on Grubhub' with a purple sparkle icon and a 'Try' button." width="302" height="52" loading="lazy"></div>
+        <div class="frame"><img src="../../../assets/img/assistant-try.webp" alt="An action card reading 'Place order on Grubhub' with a purple sparkle icon and a 'Try' button." width="302" height="52" loading="lazy"></div>
         <figcaption>AI-generated actions get their own color and a "Try" label.</figcaption>
       </figure>
     </section>
@@ -85,7 +115,7 @@ variants: v1 v2
       <h2 id="shipped" class="prose">What shipped</h2>
       <p class="prose">A high-fidelity interactive prototype, demonstrated live at UiPath Forward in October 2023. Soon after I left, the assistant went into production as UiPath Autopilot, a sidecar chatbot within the UiPath automation platform.</p>
       <figure class="wide">
-        <div class="frame scroll-x"><img src="{base}assets/img/assistant-states.webp" alt="A row of automation card states laid out on a grid: small card, confirm prompt, running, paused, paused and expanded, completed, completed and expanded, user input required, error, and stopped. Each state has clear controls such as Pause, Continue, Stop, Retry and Next." width="2400" height="687" loading="lazy"></div>
+        <div class="frame scroll-x"><img src="../../../assets/img/assistant-states.webp" alt="A row of automation card states laid out on a grid: small card, confirm prompt, running, paused, paused and expanded, completed, completed and expanded, user input required, error, and stopped. Each state has clear controls such as Pause, Continue, Stop, Retry and Next." width="2400" height="687" loading="lazy"></div>
         <figcaption>Every state an automation can be in, including the moments the person has to step in.</figcaption>
       </figure>
     </section>
@@ -107,7 +137,23 @@ variants: v1 v2
 
     <nav class="next-case" aria-label="Next case study">
       <p class="eyebrow">Next case study</p>
-      <a href="{home}work/turkish-transcriber/">Turkish voice and video transcriber</a>
+      <a href="../../../v2/work/turkish-transcriber/">Turkish voice and video transcriber</a>
     </nav>
   </div>
 </div>
+</main>
+<footer class="site-footer" id="contact">
+  <div class="wrap">
+    <h2>Get in touch</h2>
+    <p>I'm looking for senior product design roles on AI products.</p>
+    <ul class="contact-links">
+      <li><a href="mailto:me@shaunburley.com">me@shaunburley.com</a></li>
+      <li><a href="https://www.linkedin.com/in/shaunburleyux">LinkedIn</a></li>
+      <li><a href="https://github.com/Shaunathon">GitHub</a></li>
+      <li><a href="../../../v2/#cv">CV</a></li>
+    </ul>
+    <small>&copy; 2026 Shaun Burley</small>
+  </div>
+</footer>
+</body>
+</html>
