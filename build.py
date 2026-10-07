@@ -4,14 +4,11 @@ Each content file starts with a few `key: value` lines, then a line with
 `---`, then the page's main HTML. Run `python3 build.py` after editing; it
 writes the finished pages next to this file, which is what GitHub Pages serves.
 
-In page HTML, `{base}` is the path to the site root (for assets), `{home}` is
-the path to the current version's home page (for links between pages), and
-`{{include name}}` pastes in content/partials/name.html.
+In page HTML, `{base}` and `{home}` are the relative path to the site root,
+and `{{include name}}` pastes in content/partials/name.html.
 
-Two versions are built while the redesign is in draft:
-- v1, the original site, at the root
-- v2, the two-column draft, under v2/
-A page lists which versions it belongs to in its `variants:` line (default v1).
+The home page is two columns: a menu on the left switches the panel on the
+right (assets/js/site.js). Old addresses in REDIRECTS forward to the new ones.
 """
 
 from pathlib import Path
@@ -39,7 +36,9 @@ HEAD = """<!doctype html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <link rel="stylesheet" href="{base}assets/css/site.css">
-{extra_head}</head>
+<link rel="stylesheet" href="{base}assets/css/layout.css">
+<script src="{base}assets/js/site.js" defer></script>
+</head>
 """
 
 FOOTER = """<footer class="site-footer" id="contact">
@@ -57,19 +56,7 @@ FOOTER = """<footer class="site-footer" id="contact">
 </footer>
 """
 
-V1_HEADER = """<header class="site-header">
-  <div class="wrap">
-    <a class="site-name" href="{home}">Shaun Burley</a>
-    <nav class="site-nav" aria-label="Main">
-      <ul>
-{nav}
-      </ul>
-    </nav>
-  </div>
-</header>
-"""
-
-V2_HEADER = """<header class="site-header sticky">
+HEADER = """<header class="site-header sticky">
   <div class="wrap">
     <a class="site-name" href="{home}">Shaun Burley</a>
     <p class="site-tagline">I design AI products people can trust.</p>
@@ -77,13 +64,26 @@ V2_HEADER = """<header class="site-header sticky">
 </header>
 """
 
-V1_NAV = [("Work", "index.html#work", "work"), ("About", "about/", "about"), ("CV", "cv/", "cv")]
-V2_SECTIONS = [("About", "about"), ("Case studies", "case-studies"), ("Archive", "archive"), ("Projects", "projects"), ("CV", "cv")]
+SECTIONS = [("About", "about"), ("Case studies", "case-studies"), ("Archive", "archive"), ("Projects", "projects"), ("CV", "cv")]
 
-VARIANTS = {
-    "v1": {"prefix": "", "extra_head": ""},
-    "v2": {"prefix": "v2/", "extra_head": '<link rel="stylesheet" href="{base}assets/css/v2.css">\n<script src="{base}assets/js/v2.js" defer></script>\n'},
+REDIRECTS = {
+    # Addresses from the first draft of the site
+    "v2/index.html": "../",
+    "about/index.html": "../#about",
+    "cv/index.html": "../#cv",
 }
+
+REDIRECT = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shaun Burley</title>
+<meta http-equiv="refresh" content="0; url={to}">
+<link rel="canonical" href="{to}">
+</head>
+<body><p>This page has moved. <a href="{to}">Go to the new page</a>.</p></body>
+</html>
+"""
 
 
 def parse(path):
@@ -101,55 +101,45 @@ def include(body):
     return body
 
 
-def header(variant, meta, home):
-    if variant == "v1":
-        nav = "\n".join(
-            '        <li><a href="{}{}"{}>{}</a></li>'.format(
-                home, href, ' aria-current="page"' if meta.get("nav") == key else "", label
-            )
-            for label, href, key in V1_NAV
-        )
-        return V1_HEADER.format(home=home, nav=nav)
-    # v2: the home page has its own side menu, so the header only carries
+def header(meta, home):
+    # The home page has its own side menu, so the header only carries
     # section links on inner pages, where they lead back to the home panels.
     if meta.get("nav") == "home":
         nav = '    <a class="header-contact" href="#contact">Get in touch</a>\n'
     else:
         items = "\n".join(
-            f'        <li><a href="{home}#{key}">{label}</a></li>' for label, key in V2_SECTIONS
+            f'        <li><a href="{home}#{key}">{label}</a></li>' for label, key in SECTIONS
         )
         nav = f'    <nav class="site-nav" aria-label="Main">\n      <ul>\n{items}\n      </ul>\n    </nav>\n'
-    return V2_HEADER.format(home=home, nav=nav)
+    return HEADER.format(home=home, nav=nav)
+
+
+def write(out, html):
+    target = ROOT / out
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(html, encoding="utf-8")
+    print("wrote", out)
 
 
 def build():
     for path in sorted(CONTENT.glob("*.html")):
         meta, body = parse(path)
-        for variant in meta.get("variants", "v1").split():
-            out = VARIANTS[variant]["prefix"] + meta["output"]
-            base = "../" * out.count("/")
-            home = base + VARIANTS[variant]["prefix"]
-            cv_href = f"{home}#cv" if variant == "v2" else f"{home}cv/"
-            html = (
-                HEAD.format(
-                    title=meta["title"],
-                    description=meta["description"],
-                    base=base,
-                    extra_head=VARIANTS[variant]["extra_head"].format(base=base),
-                )
-                + "<body>\n"
-                + '<a class="skip-link" href="#main">Skip to content</a>\n'
-                + header(variant, meta, home)
-                + '<main id="main">\n'
-                + include(body).replace("{base}", base).replace("{home}", home)
-                + "\n</main>\n"
-                + FOOTER.format(email=EMAIL, linkedin=LINKEDIN, github=GITHUB, cv_href=cv_href)
-                + "</body>\n</html>\n"
-            )
-            target = ROOT / out
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(html, encoding="utf-8")
-            print("wrote", out)
+        out = meta["output"]
+        base = "../" * out.count("/")
+        html = (
+            HEAD.format(title=meta["title"], description=meta["description"], base=base)
+            + "<body>\n"
+            + '<a class="skip-link" href="#main">Skip to content</a>\n'
+            + header(meta, base)
+            + '<main id="main">\n'
+            + include(body).replace("{base}", base).replace("{home}", base)
+            + "\n</main>\n"
+            + FOOTER.format(email=EMAIL, linkedin=LINKEDIN, github=GITHUB, cv_href=f"{base}#cv")
+            + "</body>\n</html>\n"
+        )
+        write(out, html)
+    for out, to in REDIRECTS.items():
+        write(out, REDIRECT.format(to=to))
 
 
 if __name__ == "__main__":

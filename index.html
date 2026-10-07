@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shaun Burley, senior product designer</title>
+<title>Shaun Burley, product designer</title>
 <meta name="description" content="I design AI products people can trust: agents that show their work, flag when they're unsure, and fit into real workflows.">
-<meta property="og:title" content="Shaun Burley, senior product designer">
+<meta property="og:title" content="Shaun Burley, product designer">
 <meta property="og:description" content="I design AI products people can trust: agents that show their work, flag when they're unsure, and fit into real workflows.">
 <meta property="og:type" content="website">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -13,83 +13,194 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<script src="assets/js/site.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
+<header class="site-header sticky">
   <div class="wrap">
     <a class="site-name" href="">Shaun Burley</a>
-    <nav class="site-nav" aria-label="Main">
-      <ul>
-        <li><a href="index.html#work">Work</a></li>
-        <li><a href="about/">About</a></li>
-        <li><a href="cv/">CV</a></li>
-      </ul>
-    </nav>
+    <p class="site-tagline">I design AI products people can trust.</p>
+    <a class="header-contact" href="#contact">Get in touch</a>
   </div>
 </header>
 <main id="main">
-<div class="wrap">
-  <section class="hero" aria-labelledby="headline">
-    <h1 id="headline">I design AI products people can trust.</h1>
-    <p class="lede">Agents that show their work, flag when they're unsure, and fit into real workflows.</p>
-    <p class="intro">I'm Shaun Burley, a senior product designer. At UiPath I designed an AI assistant for enterprise automation, from first concept to a live demo at the UiPath Forward conference. Today I design and build my own AI tools in code.</p>
-    <div class="button-row">
-      <a class="button primary" href="#work">See the work</a>
-      <a class="button" href="about/">About me</a>
-    </div>
-  </section>
+<div class="wrap split">
+  <nav class="side" aria-label="Sections">
+    <ul>
+      <li><a href="#about" data-panel="about">About</a></li>
+      <li><a href="#case-studies" data-panel="case-studies">Case studies</a></li>
+      <li><a href="#archive" data-panel="archive">Archive</a></li>
+      <li><a href="#projects" data-panel="projects">Projects</a></li>
+      <li><a href="#cv" data-panel="cv">CV</a></li>
+    </ul>
+  </nav>
 
-  <section class="section" id="work" aria-labelledby="work-heading">
-    <h2 id="work-heading">Featured work</h2>
-    <div class="work-list">
-      <article class="work-card">
-        <div>
-          <ul class="tags"><li>UiPath</li><li>2023</li><li>Sole designer</li></ul>
-          <h3><a href="work/designing-for-uncertainty/">Designing for uncertainty</a></h3>
-          <p>An AI assistant that tells people how confident it is, lets them see each step it takes, and labels experimental actions honestly. Sole designer from concept to CEO and CTO review and a conference demo.</p>
-          <a href="work/designing-for-uncertainty/">Read the case study<span class="visually-hidden"> about designing for uncertainty</span></a>
-        </div>
-        <div class="media"><img src="assets/img/assistant-action-types.webp" alt="" width="977" height="1049" loading="lazy"></div>
-      </article>
-      <article class="work-card">
-        <div>
-          <ul class="tags"><li>Personal project</li><li>Designed and built</li></ul>
-          <h3><a href="work/turkish-transcriber/">Turkish voice and video transcriber</a></h3>
-          <p>An AI study tool I designed and built: speech is transcribed and translated, then turned into an interactive report with audio playback and sentence-by-sentence highlighting.</p>
-          <a href="work/turkish-transcriber/">Read the case study<span class="visually-hidden"> about the Turkish transcriber</span></a>
-        </div>
-        <div class="media"><img src="assets/img/transcriber-video.webp" alt="" width="1800" height="1636" loading="lazy"></div>
-      </article>
-    </div>
-  </section>
+  <div class="panels">
+    <section class="panel" id="about" aria-labelledby="about-h">
+      <h1 id="about-h" tabindex="-1">I design AI products people can trust.</h1>
+      <p class="lede">Agents that show their work, flag when they're unsure, and fit into real workflows.</p>
+      <div class="prose">
+        <p>I'm Shaun Burley, a product designer with 5+ years of experience. As a senior product designer at UiPath, I designed an AI assistant for enterprise automation, from first concept to a live demo at the UiPath Forward conference. Today I design and build my own AI tools in code.</p>
+        <p>At UiPath I designed AI assistant and enterprise automation experiences, and helped build and run a design system that supported more than a dozen products and helped designers at acquired companies reskin their products to fit the suite. Before that I worked on enterprise SaaS research and design, and on interfaces for portable medical devices, where a misread screen has real consequences.</p>
+    <p>I came to design from music. I earned a bachelor's degree in music and worked as a professional musician before graduate school in human-computer interaction.</p>
 
-  <section class="section" aria-labelledby="principles-heading">
-    <h2 id="principles-heading">How I design AI</h2>
-    <p class="prose">Five principles from my own work on agents that work alongside people.</p>
-    <ol class="principles">
-      <li>
-        <h3>Show the work.</h3>
-        <p>People should always know what the agent is doing and what's left. Let them open up the steps when they want detail, and keep them out of the way when they don't.</p>
-      </li>
-      <li>
-        <h3>Say how sure you are.</h3>
-        <p>Mark confidence plainly, and label experimental features as experiments. Honest uncertainty earns more trust than false confidence.</p>
-      </li>
-      <li>
-        <h3>Make the hand-off clear.</h3>
-        <p>At every moment, it should be obvious whether the person or the agent is in charge, and what the person needs to do next.</p>
-      </li>
-      <li>
-        <h3>Respect people's attention.</h3>
-        <p>People have other work to do besides watching an agent run. Ask for setup once, confirm when the job is done, and make the results easy to find.</p>
-      </li>
-      <li>
-        <h3>If you teleport them, you owe them the way back.</h3>
-        <p>When the system moves people somewhere they didn't navigate themselves, it takes responsibility for getting them back. A document an AI assistant creates in a chat shouldn't only be findable through that chat. Show the path, or make the destination findable without relying on memory.</p>
-      </li>
-    </ol>
-  </section>
+    <h2>2024 to now</h2>
+    <p>Since my last product design role, I've returned to professional music alongside self-directed study in AI. That time has made me a more hands-on designer, and much more fluent with AI.</p>
+    <ul class="about-list">
+      <li><strong>Machine learning and LLMs.</strong> In early 2024 I completed MIT Professional Education's Applied Generative AI for Digital Transformation, covering machine learning basics and working with LLMs in industry, including fine-tuning.</li>
+      <li><strong>Performing.</strong> I founded a Balkan brass band, perform with it professionally, and designed and built its website.</li>
+      <li><strong>Turkish music and language.</strong> I'm studying Turkish music and the Turkish language, extending my practice into a new musical tradition.</li>
+      <li><strong>Clarinet method book.</strong> I'm co-authoring a method book on folk ornamentation for the clarinet with Milan Milosevic, to be published as an ebook and a companion website.</li>
+      <li><strong>AI tools I designed and built.</strong> In 2025 I started building my own software with AI to support my studies. The main one is a <a href="work/turkish-transcriber/">Turkish voice transcriber</a> that turns recorded speech into an interactive study report.</li>
+    </ul>
+    <p>Writing a method book means taking something experts do by feel and turning it into steps a learner can follow. That's the same work I do in product design. Building my own AI tools taught me, firsthand, where these systems earn trust and where they lose it.</p>
+      </div>
+
+      <h2>How I design AI</h2>
+      <p class="prose">Five principles from my own work on agents that work alongside people.</p>
+      <ol class="principles">
+        <li>
+          <h3>Show the work.</h3>
+          <p>People should always know what the agent is doing and what's left. Let them open up the steps when they want detail, and keep them out of the way when they don't.</p>
+        </li>
+        <li>
+          <h3>Say how sure you are.</h3>
+          <p>Mark confidence plainly, and label experimental features as experiments. Honest uncertainty earns more trust than false confidence.</p>
+        </li>
+        <li>
+          <h3>Make the hand-off clear.</h3>
+          <p>At every moment, it should be obvious whether the person or the agent is in charge, and what the person needs to do next.</p>
+        </li>
+        <li>
+          <h3>Respect people's attention.</h3>
+          <p>People have other work to do besides watching an agent run. Ask for setup once, confirm when the job is done, and make the results easy to find.</p>
+        </li>
+        <li>
+          <h3>If you teleport them, you owe them the way back.</h3>
+          <p>When the system moves people somewhere they didn't navigate themselves, it takes responsibility for getting them back. A document an AI assistant creates in a chat shouldn't only be findable through that chat. Show the path, or make the destination findable without relying on memory.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="panel" id="case-studies" aria-labelledby="case-studies-h">
+      <h2 id="case-studies-h" tabindex="-1">Case studies</h2>
+      <ol class="case-list">
+        <li>
+          <a href="work/designing-for-uncertainty/">
+            <span class="case-meta">UiPath · 2023 · Primary designer</span>
+            <span class="case-title">Designing for uncertainty</span>
+            <span class="case-desc">An AI assistant that tells people how confident it is, lets them see each step it takes, and labels experimental actions honestly. From concept to CEO and CTO review and a conference demo.</span>
+            <span class="case-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a href="work/turkish-transcriber/">
+            <span class="case-meta">Personal project · Designed and built</span>
+            <span class="case-title">Turkish voice and video transcriber</span>
+            <span class="case-desc">An AI study tool that turns Turkish audio into side-by-side Turkish and English study pages, with a transcript that follows the video.</span>
+            <span class="case-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="panel" id="archive" aria-labelledby="archive-h">
+      <h2 id="archive-h" tabindex="-1">Archive</h2>
+      <div class="empty-state prose">
+        <p>Older projects are on their way here, including interfaces for a portable medical device, enterprise SaaS research and design, and a design system that supported more than a dozen products.</p>
+        <p>Until then, the <a href="#case-studies" data-panel="case-studies">case studies</a> show my most recent work.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="projects" aria-labelledby="projects-h">
+      <h2 id="projects-h" tabindex="-1">AI-assisted projects</h2>
+      <p class="prose">Tools I've designed and built, each for a real problem in my own work as a musician and learner.</p>
+      <ul class="project-grid">
+        <li class="project">
+          <img src="assets/img/thumb-transcriber.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://shaunathon.github.io/youtube-turkish-transcriber/">Turkish transcriber</a></h3>
+          <p>Turns Turkish lessons and voice messages into side-by-side study pages.</p>
+          <p class="project-links"><a href="work/turkish-transcriber/">Case study</a> · <a href="https://github.com/Shaunathon/turkish-voice-transcriber">Code</a></p>
+        </li>
+        <li class="project">
+          <img src="assets/img/thumb-setlist.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://setlist-practice.netlify.app/">Setlist practice</a></h3>
+          <p>One shared page per show, so my ensemble hears every song's source recording in the key we play it, with loops and slow-down for practice.</p>
+          <p class="project-links"><a href="https://github.com/Shaunathon/setlist-practice">Code</a></p>
+        </li>
+        <li class="project">
+          <img src="assets/img/thumb-makam.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://shaunathon.github.io/makam-keyboard/">Makam keyboard</a></h3>
+          <p>A 53-tone synthesizer for training my ear to hear the microtonal intervals of Turkish makam music.</p>
+          <p class="project-links"><a href="https://github.com/Shaunathon/makam-keyboard">Code</a></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel cv" id="cv" aria-labelledby="cv-h">
+      <h2 id="cv-h" class="panel-title" tabindex="-1">CV</h2>
+      <div class="print-only">
+        <p class="cv-name">Shaun Burley</p>
+        <p class="role-meta">Product designer · Seattle, WA · me@shaunburley.com · linkedin.com/in/shaunburleyux · shaunburley.com</p>
+      </div>
+      <p class="no-print"><a class="button" href="assets/Shaun-Burley-CV.pdf">Download PDF</a></p>
+      <div class="prose">
+    <h2>Summary</h2>
+    <p>Product designer with 5+ years of experience designing complex, human-centered products. I design AI products people can trust: agents that show their work, flag when they're unsure, and fit into real workflows. I prototype in code, and I bring a background in professional music and HCI research.</p>
+
+    <h2>Experience</h2>
+
+    <h3>Independent design and AI projects</h3>
+    <p class="role-meta">2024 to present</p>
+    <ul>
+      <li>Designed and built AI study tools in code, including a Turkish voice transcriber that turns recorded speech into interactive reports with transcription, translation and audio playback.</li>
+      <li>Designed and built music practice tools: a shared setlist practice app for an ensemble and a 53-tone makam keyboard for ear training.</li>
+      <li>Completed MIT Professional Education: Applied Generative AI for Digital Transformation (2024).</li>
+    </ul>
+
+    <h3>Professional musician</h3>
+    <p class="role-meta">2024 to present</p>
+    <ul>
+      <li>Founder and leader, Balkan brass band; designed and built the band's website.</li>
+      <li>Co-author, with Milan Milosevic, of a method book on clarinet folk ornamentation (in progress).</li>
+      <li>Ongoing study of the Turkish language.</li>
+    </ul>
+
+    <h3>Senior Product Designer, UiPath</h3>
+    <p class="role-meta">Bellevue, WA · 2019 to 2023</p>
+    <ul>
+      <li>Primary designer of an AI assistant for enterprise automation, from first concept to CEO and CTO review and a live demo at the UiPath Forward conference (2023).</li>
+      <li>Designed confidence indicators, show-on-demand agent steps and honest labels for experimental AI actions, helping people trust automation they couldn't see.</li>
+      <li>Helped build and run a design system that supported more than a dozen products and helped designers at acquired companies reskin their products to fit the suite. Created reusable components, interaction patterns and documentation, following WCAG accessibility guidelines.</li>
+      <li>Wrote design principles and guidelines for agents that work alongside people, and shared them with client automation developers.</li>
+      <li>Partnered with product managers, engineers and UX research across discovery, research synthesis, interaction design and prototyping; co-ran a week-long design sprint.</li>
+    </ul>
+
+    <h3>Interaction Designer, Bresslergroup</h3>
+    <p class="role-meta">Philadelphia, PA · 2017 to 2018</p>
+    <ul>
+      <li>Designed digital and physical interactions for medical devices and wearables with industrial designers, researchers and engineers.</li>
+      <li>Contributed to projects for clients including Bose and the U.S. Military, balancing usability, safety and technical constraints.</li>
+    </ul>
+
+    <h2>Education</h2>
+    <h3>Master of Human-Computer Interaction, Carnegie Mellon University</h3>
+    <p class="role-meta">2016 to 2017 · Graduate research assistant (co-author)</p>
+    <h3>UX Design Immersive, General Assembly</h3>
+    <p class="role-meta">New York, NY</p>
+    <h3>Bachelor of Music, DePaul University</h3>
+    <h3>Applied Generative AI for Digital Transformation, MIT Professional Education</h3>
+    <p class="role-meta">2024</p>
+
+    <h2>Skills</h2>
+    <p><strong>Research:</strong> contextual inquiry, journey mapping, personas, service blueprinting, heuristic evaluation, usability testing, stakeholder facilitation.</p>
+    <p><strong>Design:</strong> interaction and UI design, design systems, accessibility (WCAG), wireframing, prototyping, Figma, Sketch, Adobe Creative Suite.</p>
+    <p><strong>Code and AI:</strong> HTML, CSS, JavaScript, React, Angular, Python; building with AI coding tools such as Claude Code; Whisper and GPT APIs.</p>
+  </div>
+    </section>
+  </div>
 </div>
 </main>
 <footer class="site-footer" id="contact">
@@ -100,7 +211,7 @@
       <li><a href="mailto:me@shaunburley.com">me@shaunburley.com</a></li>
       <li><a href="https://www.linkedin.com/in/shaunburleyux">LinkedIn</a></li>
       <li><a href="https://github.com/Shaunathon">GitHub</a></li>
-      <li><a href="cv/">CV</a></li>
+      <li><a href="#cv">CV</a></li>
     </ul>
     <small>&copy; 2026 Shaun Burley</small>
   </div>

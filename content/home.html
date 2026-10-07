@@ -1,67 +1,117 @@
 output: index.html
-title: Shaun Burley, senior product designer
+title: Shaun Burley, product designer
 description: I design AI products people can trust: agents that show their work, flag when they're unsure, and fit into real workflows.
 nav: home
 ---
-<div class="wrap">
-  <section class="hero" aria-labelledby="headline">
-    <h1 id="headline">I design AI products people can trust.</h1>
-    <p class="lede">Agents that show their work, flag when they're unsure, and fit into real workflows.</p>
-    <p class="intro">I'm Shaun Burley, a senior product designer. At UiPath I designed an AI assistant for enterprise automation, from first concept to a live demo at the UiPath Forward conference. Today I design and build my own AI tools in code.</p>
-    <div class="button-row">
-      <a class="button primary" href="#work">See the work</a>
-      <a class="button" href="{home}about/">About me</a>
-    </div>
-  </section>
+<div class="wrap split">
+  <nav class="side" aria-label="Sections">
+    <ul>
+      <li><a href="#about" data-panel="about">About</a></li>
+      <li><a href="#case-studies" data-panel="case-studies">Case studies</a></li>
+      <li><a href="#archive" data-panel="archive">Archive</a></li>
+      <li><a href="#projects" data-panel="projects">Projects</a></li>
+      <li><a href="#cv" data-panel="cv">CV</a></li>
+    </ul>
+  </nav>
 
-  <section class="section" id="work" aria-labelledby="work-heading">
-    <h2 id="work-heading">Featured work</h2>
-    <div class="work-list">
-      <article class="work-card">
-        <div>
-          <ul class="tags"><li>UiPath</li><li>2023</li><li>Sole designer</li></ul>
-          <h3><a href="{home}work/designing-for-uncertainty/">Designing for uncertainty</a></h3>
-          <p>An AI assistant that tells people how confident it is, lets them see each step it takes, and labels experimental actions honestly. Sole designer from concept to CEO and CTO review and a conference demo.</p>
-          <a href="{home}work/designing-for-uncertainty/">Read the case study<span class="visually-hidden"> about designing for uncertainty</span></a>
-        </div>
-        <div class="media"><img src="{base}assets/img/assistant-action-types.webp" alt="" width="977" height="1049" loading="lazy"></div>
-      </article>
-      <article class="work-card">
-        <div>
-          <ul class="tags"><li>Personal project</li><li>Designed and built</li></ul>
-          <h3><a href="{home}work/turkish-transcriber/">Turkish voice and video transcriber</a></h3>
-          <p>An AI study tool I designed and built: speech is transcribed and translated, then turned into an interactive report with audio playback and sentence-by-sentence highlighting.</p>
-          <a href="{home}work/turkish-transcriber/">Read the case study<span class="visually-hidden"> about the Turkish transcriber</span></a>
-        </div>
-        <div class="media"><img src="{base}assets/img/transcriber-video.webp" alt="" width="1800" height="1636" loading="lazy"></div>
-      </article>
-    </div>
-  </section>
+  <div class="panels">
+    <section class="panel" id="about" aria-labelledby="about-h">
+      <h1 id="about-h" tabindex="-1">I design AI products people can trust.</h1>
+      <p class="lede">Agents that show their work, flag when they're unsure, and fit into real workflows.</p>
+      <div class="prose">
+        <p>I'm Shaun Burley, a product designer with 5+ years of experience. As a senior product designer at UiPath, I designed an AI assistant for enterprise automation, from first concept to a live demo at the UiPath Forward conference. Today I design and build my own AI tools in code.</p>
+        {{include about-body}}
+      </div>
 
-  <section class="section" aria-labelledby="principles-heading">
-    <h2 id="principles-heading">How I design AI</h2>
-    <p class="prose">Five principles from my own work on agents that work alongside people.</p>
-    <ol class="principles">
-      <li>
-        <h3>Show the work.</h3>
-        <p>People should always know what the agent is doing and what's left. Let them open up the steps when they want detail, and keep them out of the way when they don't.</p>
-      </li>
-      <li>
-        <h3>Say how sure you are.</h3>
-        <p>Mark confidence plainly, and label experimental features as experiments. Honest uncertainty earns more trust than false confidence.</p>
-      </li>
-      <li>
-        <h3>Make the hand-off clear.</h3>
-        <p>At every moment, it should be obvious whether the person or the agent is in charge, and what the person needs to do next.</p>
-      </li>
-      <li>
-        <h3>Respect people's attention.</h3>
-        <p>People have other work to do besides watching an agent run. Ask for setup once, confirm when the job is done, and make the results easy to find.</p>
-      </li>
-      <li>
-        <h3>If you teleport them, you owe them the way back.</h3>
-        <p>When the system moves people somewhere they didn't navigate themselves, it takes responsibility for getting them back. A document an AI assistant creates in a chat shouldn't only be findable through that chat. Show the path, or make the destination findable without relying on memory.</p>
-      </li>
-    </ol>
-  </section>
+      <h2>How I design AI</h2>
+      <p class="prose">Five principles from my own work on agents that work alongside people.</p>
+      <ol class="principles">
+        <li>
+          <h3>Show the work.</h3>
+          <p>People should always know what the agent is doing and what's left. Let them open up the steps when they want detail, and keep them out of the way when they don't.</p>
+        </li>
+        <li>
+          <h3>Say how sure you are.</h3>
+          <p>Mark confidence plainly, and label experimental features as experiments. Honest uncertainty earns more trust than false confidence.</p>
+        </li>
+        <li>
+          <h3>Make the hand-off clear.</h3>
+          <p>At every moment, it should be obvious whether the person or the agent is in charge, and what the person needs to do next.</p>
+        </li>
+        <li>
+          <h3>Respect people's attention.</h3>
+          <p>People have other work to do besides watching an agent run. Ask for setup once, confirm when the job is done, and make the results easy to find.</p>
+        </li>
+        <li>
+          <h3>If you teleport them, you owe them the way back.</h3>
+          <p>When the system moves people somewhere they didn't navigate themselves, it takes responsibility for getting them back. A document an AI assistant creates in a chat shouldn't only be findable through that chat. Show the path, or make the destination findable without relying on memory.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="panel" id="case-studies" aria-labelledby="case-studies-h">
+      <h2 id="case-studies-h" tabindex="-1">Case studies</h2>
+      <ol class="case-list">
+        <li>
+          <a href="{home}work/designing-for-uncertainty/">
+            <span class="case-meta">UiPath · 2023 · Primary designer</span>
+            <span class="case-title">Designing for uncertainty</span>
+            <span class="case-desc">An AI assistant that tells people how confident it is, lets them see each step it takes, and labels experimental actions honestly. From concept to CEO and CTO review and a conference demo.</span>
+            <span class="case-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a href="{home}work/turkish-transcriber/">
+            <span class="case-meta">Personal project · Designed and built</span>
+            <span class="case-title">Turkish voice and video transcriber</span>
+            <span class="case-desc">An AI study tool that turns Turkish audio into side-by-side Turkish and English study pages, with a transcript that follows the video.</span>
+            <span class="case-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="panel" id="archive" aria-labelledby="archive-h">
+      <h2 id="archive-h" tabindex="-1">Archive</h2>
+      <div class="empty-state prose">
+        <p>Older projects are on their way here, including interfaces for a portable medical device, enterprise SaaS research and design, and a design system that supported more than a dozen products.</p>
+        <p>Until then, the <a href="#case-studies" data-panel="case-studies">case studies</a> show my most recent work.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="projects" aria-labelledby="projects-h">
+      <h2 id="projects-h" tabindex="-1">AI-assisted projects</h2>
+      <p class="prose">Tools I've designed and built, each for a real problem in my own work as a musician and learner.</p>
+      <ul class="project-grid">
+        <li class="project">
+          <img src="{base}assets/img/thumb-transcriber.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://shaunathon.github.io/youtube-turkish-transcriber/">Turkish transcriber</a></h3>
+          <p>Turns Turkish lessons and voice messages into side-by-side study pages.</p>
+          <p class="project-links"><a href="{home}work/turkish-transcriber/">Case study</a> · <a href="https://github.com/Shaunathon/turkish-voice-transcriber">Code</a></p>
+        </li>
+        <li class="project">
+          <img src="{base}assets/img/thumb-setlist.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://setlist-practice.netlify.app/">Setlist practice</a></h3>
+          <p>One shared page per show, so my ensemble hears every song's source recording in the key we play it, with loops and slow-down for practice.</p>
+          <p class="project-links"><a href="https://github.com/Shaunathon/setlist-practice">Code</a></p>
+        </li>
+        <li class="project">
+          <img src="{base}assets/img/thumb-makam.webp" alt="" width="1200" height="750" loading="lazy">
+          <h3><a href="https://shaunathon.github.io/makam-keyboard/">Makam keyboard</a></h3>
+          <p>A 53-tone synthesizer for training my ear to hear the microtonal intervals of Turkish makam music.</p>
+          <p class="project-links"><a href="https://github.com/Shaunathon/makam-keyboard">Code</a></p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel cv" id="cv" aria-labelledby="cv-h">
+      <h2 id="cv-h" class="panel-title" tabindex="-1">CV</h2>
+      <div class="print-only">
+        <p class="cv-name">Shaun Burley</p>
+        <p class="role-meta">Product designer · Seattle, WA · me@shaunburley.com · linkedin.com/in/shaunburleyux · shaunburley.com</p>
+      </div>
+      <p class="no-print"><a class="button" href="{base}assets/Shaun-Burley-CV.pdf">Download PDF</a></p>
+      {{include cv-body}}
+    </section>
+  </div>
 </div>

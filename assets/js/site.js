@@ -1,6 +1,6 @@
-// v2 draft: switch the right-hand panel from the left-hand menu, and shade the
-// sticky header once the page scrolls. Without JavaScript every panel shows,
-// stacked, and the menu links jump to them.
+// Switch the right-hand panel on the home page from the left-hand menu, and
+// shade the sticky header once the page scrolls. Without JavaScript every
+// panel shows, stacked, and the menu links jump to them.
 
 (function () {
   document.documentElement.classList.add("js");

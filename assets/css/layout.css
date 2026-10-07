@@ -1,4 +1,4 @@
-/* v2 draft: sticky header and a two-column home page. Loaded after site.css. */
+/* Sticky header and the two-column home page. Loaded after site.css. */
 
 :root { --header-h: 4rem; }
 
@@ -143,4 +143,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .side a, .case-arrow, .project img, .site-header.sticky { transition: none; }
+}
+
+.print-only { display: none; }
+
+@media print {
+  .side, .panel-title { display: none !important; }
+  .panels { border: 0; padding: 0; }
+  .split { display: block; padding: 0; }
+  .print-only { display: block; }
+  .cv-name { font-family: var(--serif); font-size: 22pt; margin: 0 0 2pt; }
 }
