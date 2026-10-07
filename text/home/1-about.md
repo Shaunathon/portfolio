@@ -12,17 +12,6 @@ At UiPath I designed AI assistant and enterprise automation experiences, and hel
 
 I came to design from music. I earned a bachelor's degree in music and worked as a professional musician before graduate school in human-computer interaction.
 
-## 2024 to now
-
-Since my last product design role, I've returned to professional music alongside self-directed study in AI. That time has made me a more hands-on designer, and much more fluent with AI.
-
-- **Machine learning and LLMs.** In early 2024 I completed MIT Professional Education's Applied Generative AI for Digital Transformation, covering machine learning basics and working with LLMs in industry, including fine-tuning.
-- **Performing.** I founded a Balkan brass band, perform with it professionally, and designed and built its website.
-- **Turkish music and language.** I'm studying Turkish music and the Turkish language, extending my practice into a new musical tradition.
-- **Clarinet method book.** I'm co-authoring a method book on folk ornamentation for the clarinet with Milan Milosevic, to be published as an ebook and a companion website.
-- **AI tools I designed and built.** In 2025 I started building my own software with AI to support my studies. The main one is a [Turkish voice transcriber](work/turkish-transcriber/) that turns recorded speech into an interactive study report.
-
-Writing a method book means taking something experts do by feel and turning it into steps a learner can follow. That's the same work I do in product design. Building my own AI tools taught me, firsthand, where these systems earn trust and where they lose it.
 
 ## How I design AI
 
@@ -47,3 +36,17 @@ People have other work to do besides watching an agent run. Ask for setup once, 
 ### If you teleport them, you owe them the way back.
 
 When the system moves people somewhere they didn't navigate themselves, it takes responsibility for getting them back. A document an AI assistant creates in a chat shouldn't only be findable through that chat. Show the path, or make the destination findable without relying on memory.
+
+
+## 2024 to now
+
+Since my last product design role, I've returned to professional music alongside self-directed study in AI. That time has made me a more hands-on designer, and much more fluent with AI.
+
+- **Machine learning and LLMs.** In early 2024 I completed MIT Professional Education's Applied Generative AI for Digital Transformation, covering machine learning basics and working with LLMs in industry, including fine-tuning.
+- **Performing.** I founded a Balkan brass band, perform with it professionally, and designed and built its website.
+- **Turkish music and language.** I'm studying Turkish music and the Turkish language, extending my practice into a new musical tradition.
+- **Clarinet method book.** I'm co-authoring a method book on folk ornamentation for the clarinet with Milan Milosevic, to be published as an ebook and a companion website.
+- **AI tools I designed and built.** In 2025 I started building my own software with AI to support my studies. The main one is a [Turkish voice transcriber](work/turkish-transcriber/) that turns recorded speech into an interactive study report.
+
+Writing a method book means taking something experts do by feel and turning it into steps a learner can follow. That's the same work I do in product design. Building my own AI tools taught me, firsthand, where these systems earn trust and where they lose it.
+

@@ -217,24 +217,32 @@ BLANK = "\n\n"
 
 
 def about(meta, body, base):
-    intro, principles = [], []
+    # Plain text goes in prose blocks; each run of ### headings becomes a
+    # row of principle cards, and a ## heading after them starts prose again.
+    parts = [["prose"]]
     for block in body:
-        if kind(block) == "h3":
-            principles.append([heading(block)])
-        elif principles:
-            principles[-1].append(block)
+        k = kind(block)
+        if k == "h3":
+            if parts[-1][0] != "cards":
+                parts.append(["cards"])
+            parts[-1].append([heading(block)])
+        elif parts[-1][0] == "cards" and k != "h2":
+            parts[-1][-1].append(block)
         else:
-            intro.append(block)
-    prose = md("\n\n".join(intro), base).replace("<ul>", '<ul class="about-list">')
-    items = "\n".join(
-        f'  <li>\n    <h3>{inline(p[0], base)}</h3>\n    {md(BLANK.join(p[1:]), base)}\n  </li>' for p in principles
-    )
-    return (
-        f'<h1 id="about-h" tabindex="-1">{meta["headline"]}</h1>\n'
-        f'<p class="lede">{meta["lede"]}</p>\n'
-        f'<div class="prose">\n{prose}\n</div>\n'
-        + (f'<ol class="principles">\n{items}\n</ol>' if items else "")
-    )
+            if parts[-1][0] != "prose":
+                parts.append(["prose"])
+            parts[-1].append(block)
+    out = [f'<h1 id="about-h" tabindex="-1">{meta["headline"]}</h1>', f'<p class="lede">{meta["lede"]}</p>']
+    for part in parts:
+        if part[0] == "prose" and len(part) > 1:
+            prose = md(BLANK.join(part[1:]), base).replace("<ul>", '<ul class="about-list">')
+            out.append(f'<div class="prose">\n{prose}\n</div>')
+        elif part[0] == "cards":
+            items = "\n".join(
+                f'  <li>\n    <h3>{inline(c[0], base)}</h3>\n    {md(BLANK.join(c[1:]), base)}\n  </li>' for c in part[1:]
+            )
+            out.append(f'<ol class="principles">\n{items}\n</ol>')
+    return "\n".join(out)
 
 
 def groups(body):
