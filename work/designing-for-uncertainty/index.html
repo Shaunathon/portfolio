@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing for uncertainty: an AI assistant for enterprise automation · Shaun Burley</title>
+<meta name="description" content="How I designed an AI assistant that shows how sure it is, what it's doing, and which features are still experiments.">
+<meta property="og:title" content="Designing for uncertainty: an AI assistant for enterprise automation · Shaun Burley">
+<meta property="og:description" content="How I designed an AI assistant that shows how sure it is, what it's doing, and which features are still experiments.">
+<meta property="og:type" content="website">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="../../assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="site-name" href="../../">Shaun Burley</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="../../index.html#work" aria-current="page">Work</a></li>
+        <li><a href="../../about/">About</a></li>
+        <li><a href="../../cv/">CV</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="../../">Home</a></li>
+      <li><a href="../../#work">Work</a></li>
+      <li aria-current="page">Designing for uncertainty</li>
+    </ol>
+  </nav>
+
+  <header class="case-header">
+    <p class="eyebrow">Case study · UiPath · 2023</p>
+    <h1>Designing for uncertainty: an AI assistant for enterprise automation</h1>
+    <dl class="facts">
+      <div><dt>Role</dt><dd>Sole designer, concept to prototype</dd></div>
+      <div><dt>Team</dt><dd>Product, engineering, a second designer, content strategy</dd></div>
+      <div><dt>Outcome</dt><dd>CEO and CTO backing, live demo at UiPath Forward</dd></div>
+    </dl>
+  </header>
+
+  <div class="case-body">
+    <section class="prose" aria-labelledby="summary">
+      <h2 id="summary">Summary</h2>
+      <p>At UiPath, I designed a chat-based AI assistant that lets people who aren't technical run automations and get help with routine work in plain language. The hard problem wasn't the chat. It was trust: AI responses vary in reliability, and some automations were experimental. I designed ways for the assistant to show how sure it was, what it was doing, and which features were still experiments. The concept went from my first wireframes to a review with the CEO and CTO and a live demo at the UiPath Forward conference in October 2023.</p>
+    </section>
+
+    <figure class="tall">
+      <div class="frame"><img src="../../assets/img/assistant-intro.webp" alt="The AI assistant in a narrow desktop window. It suggests things it can help with, then answers a request to plan a business trip with a list of steps and offers to fetch the weather, schedule a meeting, file an IT ticket or create a reminder." width="511" height="1394"></div>
+      <figcaption>The assistant answers a broad request with a plan, then offers the specific tasks it can take on.</figcaption>
+    </figure>
+
+    <section class="prose" aria-labelledby="role">
+      <h2 id="role">My role</h2>
+      <p>I was the sole designer from the first concept through the high-fidelity prototype that won stakeholder buy-in. As the project grew, I worked with a second designer, ran a competitive analysis, and helped run a week-long design sprint with product managers, engineers and product owners. The team tested the assistant informally by dogfooding it; formal user testing wasn't in scope at this stage of the product. I also worked with UiPath's content strategists on the assistant's content decisions.</p>
+    </section>
+
+    <figure class="wide">
+      <div class="frame scroll-x"><img src="../../assets/img/assistant-sprint.webp" alt="Sticky notes from the design sprint grouped under three headings: Discover, Learn and Use. Notes include 'Embedded in a product I already am using', 'Ask AI to learn how they can use the product' and 'Expressing intent without needing to translate into another format'." width="1800" height="596" loading="lazy"></div>
+      <figcaption>Design sprint notes on how people would discover, learn and use the assistant.</figcaption>
+    </figure>
+
+    <section aria-labelledby="decisions">
+      <h2 id="decisions" class="prose">Key decisions</h2>
+
+      <div class="decision prose">
+        <h3>1. Show confidence, not just answers.</h3>
+        <p>Responses carried a high, medium or low confidence indicator. Each level came from a model score combined with more rules-based logic used in UiPath's traditional unattended automation software.</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> admitting uncertainty can make a product look less capable. But client conversations, user testing and the research behind our user personas all showed that people cared more about reliability and clear expectations than about how the technology worked, so honest signals built more trust than a confident tone.</p>
+      </div>
+
+      <figure>
+        <div class="frame"><img src="../../assets/img/assistant-action-types.webp" alt="A chat in which the assistant connects to a Salesforce integration, offers a pre-built out-of-office automation with a Run button, and offers to try finding an answer on its own with a 'Try it' button. A legend labels the three action types: quick action (Start), pre-built automation (Run) and just-in-time AI automation (Try)." width="977" height="1049" loading="lazy"></div>
+        <figcaption>Three kinds of action, one visual system. The assistant says plainly when it can't find an automation and offers to try instead.</figcaption>
+      </figure>
+
+      <div class="decision prose">
+        <h3>2. Let people choose how much of the work to see.</h3>
+        <p>While the assistant ran an AI-driven automation, people could show or hide its intermediate steps. Hiding the steps by default and showing them on demand gave both clarity and transparency.</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> full transparency clutters the chat, but hiding everything makes the agent a black box.</p>
+      </div>
+
+      <figure>
+        <div class="frame"><img src="../../assets/img/assistant-steps.webp" alt="Two states of an automation card. On the left, the list of six completed steps is expanded. On the right, the steps are collapsed and the results are shown instead, with a Hide results button." width="1076" height="491" loading="lazy"></div>
+        <figcaption>Completed steps expand on request; results expand and collapse separately.</figcaption>
+      </figure>
+
+      <div class="decision prose">
+        <h3>3. Label experiments honestly.</h3>
+        <p>The assistant offered three kinds of actions: quick actions, pre-built automations, and just-in-time automations generated by AI. I gave each a distinct look within one visual system, and labeled the experimental AI actions "Try" instead of "Run."</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> the label signals these might not work, which could lower usage. In return, it sets expectations so one failure doesn't damage trust in the whole assistant.</p>
+      </div>
+
+      <figure class="small">
+        <div class="frame"><img src="../../assets/img/assistant-try.webp" alt="An action card reading 'Place order on Grubhub' with a purple sparkle icon and a 'Try' button." width="302" height="52" loading="lazy"></div>
+        <figcaption>AI-generated actions get their own color and a "Try" label.</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="shipped">
+      <h2 id="shipped" class="prose">What shipped</h2>
+      <p class="prose">A high-fidelity interactive prototype, demonstrated live at UiPath Forward in October 2023. Soon after I left, the assistant went into production as UiPath Autopilot, a sidecar chatbot within the UiPath automation platform.</p>
+      <figure class="wide">
+        <div class="frame scroll-x"><img src="../../assets/img/assistant-states.webp" alt="A row of automation card states laid out on a grid: small card, confirm prompt, running, paused, paused and expanded, completed, completed and expanded, user input required, error, and stopped. Each state has clear controls such as Pause, Continue, Stop, Retry and Next." width="2400" height="687" loading="lazy"></div>
+        <figcaption>Every state an automation can be in, including the moments the person has to step in.</figcaption>
+      </figure>
+    </section>
+
+    <section class="prose" aria-labelledby="evidence">
+      <h2 id="evidence">Evidence</h2>
+      <ul>
+        <li>The CEO and CTO reviewed the concept and backed it. The work led UiPath's company-wide pivot toward agentic automation.</li>
+        <li>The design sprint pulled ideas from product, engineering and design into one direction that everyone felt some ownership of. It set the core flow and picked the most valuable use cases to design first.</li>
+        <li>The live demo at UiPath Forward drew strong positive feedback from clients in attendance at the conference.</li>
+        <li>The project put my earlier principles for agents that work alongside people into practice. I also shared them with client automation developers building internal apps for their companies, such as call center and new-employee onboarding apps.</li>
+      </ul>
+    </section>
+
+    <section class="prose" aria-labelledby="change">
+      <h2 id="change">What I'd change</h2>
+      <p>I'd spend more time on the transitions between states and steps. The automations jumped abruptly from one step to the next, yet the point of the demo was to watch the agent work. Designed transitions would have made it more appealing and given it a more human touch, and that builds trust.</p>
+    </section>
+
+    <nav class="next-case" aria-label="Next case study">
+      <p class="eyebrow">Next case study</p>
+      <a href="../../work/turkish-transcriber/">Turkish voice and video transcriber</a>
+    </nav>
+  </div>
+</div>
+</main>
+<footer class="site-footer" id="contact">
+  <div class="wrap">
+    <h2>Get in touch</h2>
+    <p>I'm looking for senior product design roles on AI products.</p>
+    <ul class="contact-links">
+      <li><a href="mailto:me@shaunburley.com">me@shaunburley.com</a></li>
+      <li><a href="https://www.linkedin.com/in/shaunburleyux">LinkedIn</a></li>
+      <li><a href="https://github.com/Shaunathon">GitHub</a></li>
+      <li><a href="../../cv/">CV</a></li>
+    </ul>
+    <small>&copy; 2026 Shaun Burley</small>
+  </div>
+</footer>
+</body>
+</html>

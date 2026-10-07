@@ -1,0 +1,101 @@
+output: work/turkish-transcriber/index.html
+title: Turkish voice and video transcriber · Shaun Burley
+description: An AI study tool I designed and built that turns Turkish audio into side-by-side Turkish and English study pages.
+nav: work
+---
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{base}">Home</a></li>
+      <li><a href="{base}#work">Work</a></li>
+      <li aria-current="page">Turkish transcriber</li>
+    </ol>
+  </nav>
+
+  <header class="case-header">
+    <p class="eyebrow">Case study · Personal project</p>
+    <h1>A study tool that shows its work: Turkish voice and video transcriber</h1>
+    <dl class="facts">
+      <div><dt>Role</dt><dd>Designer and builder, with Claude writing most of the code</dd></div>
+      <div><dt>Built with</dt><dd>Whisper for transcription, GPT for translation, Python, GitHub Pages</dd></div>
+      <div><dt>Try it</dt><dd><a href="https://shaunathon.github.io/youtube-turkish-transcriber/">Live transcripts site</a> · <a href="https://github.com/Shaunathon/turkish-voice-transcriber">Code on GitHub</a></dd></div>
+    </dl>
+  </header>
+
+  <div class="case-body">
+    <section class="prose" aria-labelledby="summary">
+      <h2 id="summary">Summary</h2>
+      <p>Turkish arrives faster than I can follow it. Fellow students further along than me send voice messages every week, and I have a backlog of Turkish music lessons on YouTube. YouTube's auto-transcribe gets too much wrong to learn from, and it has no idea it's listening to a music lesson.</p>
+      <p>So I designed and built a tool that transcribes Turkish audio, translates it sentence by sentence, and turns it into a study page with Turkish and English side by side. Videos get a transcript that follows along with playback. Voice messages get vocabulary and grammar notes, so each message becomes a lesson.</p>
+    </section>
+
+    <figure class="wide">
+      <div class="frame"><img src="{base}assets/img/transcriber-video.webp" alt="A transcript page for a Turkish clarinet lesson video. A list of lessons runs down the left. The embedded YouTube video sits above an 'Autoscroll: active' label, and below it the transcript appears in two columns, Turkish on the left and English on the right, with the current sentence highlighted." width="1800" height="1636"></div>
+      <figcaption>A lesson page: the video, an "Autoscroll: active" label that explains why the page is moving, and the transcript in two columns.</figcaption>
+    </figure>
+
+    <section class="prose" aria-labelledby="role">
+      <h2 id="role">My role</h2>
+      <p>I own the problem, the decisions and the judgment; Claude wrote most of the code. I tested each version on a real lesson or message, logged everything that was wrong, and handed Claude the whole list of fixes at once. Then I checked the result against the audio again.</p>
+    </section>
+
+    <section aria-labelledby="decisions">
+      <h2 id="decisions" class="prose">Key decisions</h2>
+
+      <div class="decision prose">
+        <h3>1. Keep the source next to the translation.</h3>
+        <p>Every page shows Turkish and English side by side, never English alone. Consistent spacing keeps each Turkish sentence level with its English pair, so the two never drift apart down the page.</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> English alone would read faster. But it would hide the AI's mistakes and stop me learning the language. Side by side, I can check every line of the translation against the original.</p>
+      </div>
+
+      <div class="decision prose">
+        <h3>2. Translate whole sentences, not fragments.</h3>
+        <p>My first version translated each timestamped fragment from the transcription on its own. Both columns came out choppy, and the translation lost meaning. I switched to grouping fragments into whole sentences first, then translating each sentence. Each pair keeps the timestamp where it starts, so clicking a line still jumps the video there. The Turkish is rebuilt from the original fragments, so the AI never rewords the source.</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> more processing logic to maintain. In return, the source stays exactly as spoken and the translation makes sense.</p>
+      </div>
+
+      <div class="decision prose">
+        <h3>3. Tell the AI what it's listening to.</h3>
+        <p>Both the transcription and the translation are told the audio is a music lesson, so they expect music terms instead of guessing. The catch that led here: <i lang="tr">çarpma</i>, a kind of ornament, kept coming out as "hit" or "strike" until I added music terminology to the translation prompt.</p>
+        <p class="tradeoff"><strong>Tradeoff:</strong> a built-in assumption helps on lessons and hurts on everything else. That's the first thing I'd change.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="shipped">
+      <h2 id="shipped" class="prose">What shipped</h2>
+      <ul class="prose">
+        <li>A public site of transcribed Turkish music lessons, where you can click any line to jump the video there and let the transcript scroll along.</li>
+        <li>Voice message pages with an audio player, playback speeds from 0.5x to 1.25x, a vocabulary table and grammar notes.</li>
+        <li>Open-source code that accepts common audio formats, so anyone can transcribe their own files.</li>
+      </ul>
+      <figure>
+        <div class="frame"><img src="{base}assets/img/transcriber-voice-notes.webp" alt="The lower half of a voice message page: a vocabulary table listing Turkish words, their English meanings and short notes, followed by four grammar notes that explain constructions used in the message." width="1250" height="1335" loading="lazy"></div>
+        <figcaption>Under each voice message: the words and grammar worth learning from it.</figcaption>
+      </figure>
+      <div class="links-row">
+        <a class="button primary" href="https://shaunathon.github.io/youtube-turkish-transcriber/">Try the live transcripts</a>
+        <a class="button" href="https://github.com/Shaunathon/turkish-voice-transcriber">See the code</a>
+      </div>
+    </section>
+
+    <section class="prose" aria-labelledby="evidence">
+      <h2 id="evidence">Evidence</h2>
+      <p>I built it for my own study and I'm its main user so far. What it showed me:</p>
+      <ul>
+        <li><strong>Context is what makes AI transcription and translation accurate.</strong> Most of my audio is music lessons, and both passes do far better when they assume a musical context.</li>
+        <li><strong>A layout decision taught me something about the language.</strong> Once each sentence pair lined up, the extra space on either side showed which kinds of expressions Turkish says more compactly than English, and the other way round.</li>
+        <li><strong>Showing the source is how the tool earns trust.</strong> It's the same principle as my assistant work at UiPath: the AI's output never hides what it came from, so the person can check it.</li>
+      </ul>
+    </section>
+
+    <section class="prose" aria-labelledby="change">
+      <h2 id="change">What I'd change</h2>
+      <p>Instead of always assuming a music lesson, I'd have the tool ask what context to assume before it transcribes anything. It follows straight from the main thing I learned: context drives accuracy, so the person who knows the context should be able to supply it.</p>
+    </section>
+
+    <nav class="next-case" aria-label="Next case study">
+      <p class="eyebrow">Next case study</p>
+      <a href="{base}work/designing-for-uncertainty/">Designing for uncertainty</a>
+    </nav>
+  </div>
+</div>
