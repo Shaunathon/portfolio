@@ -9,6 +9,7 @@ writes the finished pages next to this file, which is what GitHub Pages serves.
 Layout lives here and in assets/; text/ holds only words and image choices.
 """
 
+import hashlib
 import html
 import re
 from pathlib import Path
@@ -147,6 +148,12 @@ def tradeoff(out):
 
 # Shared page parts
 
+def version(path):
+    # A short fingerprint of the file, so browsers fetch styles and scripts
+    # again whenever they change instead of mixing old CSS with new pages.
+    return hashlib.md5((ROOT / path).read_bytes()).hexdigest()[:8]
+
+
 def head(title, description, base):
     t, d = html.escape(title), html.escape(description)
     return f"""<!doctype html>
@@ -163,9 +170,9 @@ def head(title, description, base):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
-<link rel="stylesheet" href="{base}assets/css/site.css">
-<link rel="stylesheet" href="{base}assets/css/layout.css">
-<script src="{base}assets/js/site.js" defer></script>
+<link rel="stylesheet" href="{base}assets/css/site.css?v={version('assets/css/site.css')}">
+<link rel="stylesheet" href="{base}assets/css/layout.css?v={version('assets/css/layout.css')}">
+<script src="{base}assets/js/site.js?v={version('assets/js/site.js')}" defer></script>
 </head>
 """
 
@@ -285,7 +292,9 @@ def case_list(meta, body, base):
             f'      <span class="case-desc">{desc}</span>\n'
             f'      <span class="case-arrow" aria-hidden="true">&rarr;</span>\n    </a>\n  </li>'
         )
-    return f'<h2 id="{{id}}-h" tabindex="-1">{meta["title"]}</h2>\n<ol class="case-list">\n' + "\n".join(rows) + "\n</ol>"
+    # When any case study has a thumbnail, the text of all of them lines up in a second column.
+    cls = "case-list with-thumbs" if any("case-thumb" in r for r in rows) else "case-list"
+    return f'<h2 id="{{id}}-h" tabindex="-1">{meta["title"]}</h2>\n<ol class="{cls}">\n' + "\n".join(rows) + "\n</ol>"
 
 
 def archive(meta, body, base):

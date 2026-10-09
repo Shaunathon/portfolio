@@ -15,8 +15,6 @@ An AI assistant that tells people how confident it is, lets them see each step i
 
 ## [Turkish voice and video transcriber](work/turkish-transcriber/)
 
-![](thumb-transcriber-case.webp)
-
 Personal project · Designed and built
 
 An AI study tool that turns Turkish audio into side-by-side Turkish and English study pages, with a transcript that follows the video.

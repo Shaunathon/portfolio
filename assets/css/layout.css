@@ -116,15 +116,16 @@
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid var(--rule);
+  max-width: 16rem;
   margin-bottom: 0.75rem;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .case-list a.has-thumb .case-arrow { grid-row: 2 / span 3; }
 @media (min-width: 40rem) {
-  .case-list a.has-thumb { grid-template-columns: minmax(11rem, 16rem) 1fr auto; column-gap: 1.75rem; }
-  .case-list a.has-thumb .case-thumb { grid-column: 1; grid-row: 1 / span 3; margin: 0; align-self: center; }
-  .case-list a.has-thumb .case-meta, .case-list a.has-thumb .case-title, .case-list a.has-thumb .case-desc { grid-column: 2; }
-  .case-list a.has-thumb .case-arrow { grid-column: 3; grid-row: 1 / span 3; }
+  .with-thumbs a { grid-template-columns: 10rem 1fr auto; column-gap: 1.75rem; }
+  .with-thumbs .case-thumb { grid-column: 1; grid-row: 1 / span 3; margin: 0; align-self: center; }
+  .with-thumbs .case-meta, .with-thumbs .case-title, .with-thumbs .case-desc { grid-column: 2; }
+  .with-thumbs .case-arrow, .with-thumbs a.has-thumb .case-arrow { grid-column: 3; grid-row: 1 / span 3; }
 }
 .case-list a:hover .case-thumb { transform: translateY(-3px); box-shadow: 0 10px 24px rgb(0 0 0 / 0.12); }
 .case-list a:hover .case-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
