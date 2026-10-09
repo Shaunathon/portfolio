@@ -139,6 +139,7 @@
 /* Projects grid */
 
 .project-grid { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 2rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.archive-grid { grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); }
 .project { position: relative; }
 .project img {
   width: 100%;
@@ -155,6 +156,7 @@
 .project h3 a:hover { text-decoration: underline; }
 .project p { color: var(--muted); margin: 0 0 0.4rem; font-size: 0.97rem; }
 .project .project-links { font-size: 0.9rem; }
+.project .project-meta { font-size: 0.85rem; margin-bottom: 0.5rem; }
 
 /* CV panel */
 

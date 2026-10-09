@@ -298,8 +298,30 @@ def case_list(meta, body, base):
 
 
 def archive(meta, body, base):
-    text = md("\n\n".join(body), base)
-    return f'<h2 id="{{id}}-h" tabindex="-1">{meta["title"]}</h2>\n<div class="empty-state prose">\n{text}\n</div>'
+    """Cards like the Projects grid, with a small grey line above each description."""
+    intro, items = groups(body)
+    cards = []
+    for title, parts in items:
+        name, url = link_parts(title)
+        img = next((p for p in parts if kind(p) == "figure"), None)
+        text = [p for p in parts if kind(p) != "figure"]
+        img_html = ""
+        if img:
+            file = re.search(r"\]\(([^)]+)\)", img).group(1)
+            w, h = Image.open(IMG / file).size
+            img_html = f'    <img src="{base}assets/img/{file}" alt="" width="{w}" height="{h}" loading="lazy">\n'
+        paras = [f'    <p class="project-meta">{inline(text[0], base)}</p>'] if text else []
+        paras += [f"    <p>{inline(t, base)}</p>" for t in text[1:2]]
+        paras += [f'    <p class="project-links">{inline(t, base)}</p>' for t in text[2:]]
+        head_html = f'<a href="{url}">{name}</a>' if url else name
+        cards.append(
+            f'  <li class="project">\n{img_html}    <h3>{fix_links(head_html, base)}</h3>\n' + "\n".join(paras) + "\n  </li>"
+        )
+    intro_html = "".join(f'<p class="prose">{inline(b, base)}</p>\n' for b in intro)
+    return (
+        f'<h2 id="{{id}}-h" tabindex="-1">{meta["title"]}</h2>\n{intro_html}'
+        f'<ul class="project-grid archive-grid">\n' + "\n".join(cards) + "\n</ul>"
+    )
 
 
 def projects(meta, body, base):
