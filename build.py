@@ -268,11 +268,18 @@ def case_list(meta, body, base):
     rows = []
     for title, parts in items:
         name, url = link_parts(title)
+        img = next((p for p in parts if kind(p) == "figure"), None)
+        parts = [p for p in parts if kind(p) != "figure"]
         meta_line = inline(parts[0], base) if parts else ""
         desc = inline("\n\n".join(parts[1:]), base) if len(parts) > 1 else ""
         href = fix_links(f'href="{url}"', base)
+        img_html = ""
+        if img:
+            file = re.search(r"\]\(([^)]+)\)", img).group(1)
+            w, h = Image.open(IMG / file).size
+            img_html = f'      <img class="case-thumb" src="{base}assets/img/{file}" alt="" width="{w}" height="{h}" loading="lazy">\n'
         rows.append(
-            f'  <li>\n    <a {href}>\n'
+            f'  <li>\n    <a {href}{" class=\"has-thumb\"" if img else ""}>\n{img_html}'
             f'      <span class="case-meta">{meta_line}</span>\n'
             f'      <span class="case-title">{inline(name, base)}</span>\n'
             f'      <span class="case-desc">{desc}</span>\n'
