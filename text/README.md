@@ -12,6 +12,7 @@ Every word on the site is in these files. Open any of them in a text editor (Tex
 | `home/5-cv.md` | The CV panel (the PDF is remade from it when you publish) |
 | `case-studies/designing-for-uncertainty.md` | The AI assistant case study |
 | `case-studies/turkish-transcriber.md` | The transcriber case study |
+| `case-studies/design-system.md` | The design system case study |
 
 ## How the files work
 

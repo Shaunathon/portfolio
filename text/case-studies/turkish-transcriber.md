@@ -13,8 +13,8 @@ title: A study tool that shows its work: Turkish voice and video transcriber
 Role: Designer and builder, with Claude writing most of the code
 Built with: Whisper for transcription, GPT for translation, Python, GitHub Pages
 Try it: [Live transcripts site](https://shaunathon.github.io/youtube-turkish-transcriber/) · [Code on GitHub](https://github.com/Shaunathon/turkish-voice-transcriber)
-next title: Designing for uncertainty
-next link: work/designing-for-uncertainty/
+next title: One design system for a growing product suite
+next link: work/design-system/
 ---
 ## Summary
 
