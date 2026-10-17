@@ -13,6 +13,7 @@ Every word on the site is in these files. Open any of them in a text editor (Tex
 | `case-studies/designing-for-uncertainty.md` | The AI assistant case study |
 | `case-studies/turkish-transcriber.md` | The transcriber case study |
 | `case-studies/design-system.md` | The design system case study |
+| `case-studies/agent-access-review.md` | The AI agent access review case study |
 
 ## How the files work
 
