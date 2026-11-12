@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Concept prototype: an admin reviews an AI agent's access request, narrows it, adds plain-English guardrails and sees the blast radius shrink.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<title>Renewal Agent Access Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: admin console. App bar, request header, then a work column of decisions beside a sticky "blast radius" rail that always shows the consequence of the current choices. */
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --sunk: #eceff3;
+  --fg: #151a22;
+  --muted: #586172;
+  --rule: #d8dde5;
+  --rule-strong: #b9c1cd;
+  --accent: #1f5a92;
+  --accent-fg: #ffffff;
+  --accent-soft: #e3ecf6;
+  --high: #b42318;
+  --high-soft: #fbe9e7;
+  --med: #9a5800;
+  --med-soft: #fbf0dc;
+  --low: #17724a;
+  --low-soft: #e2f2e9;
+  --shadow: 0 1px 2px rgba(21, 26, 34, .06), 0 4px 16px rgba(21, 26, 34, .06);
+  --sans: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1218; --surface: #171b23; --sunk: #1e232d; --fg: #e8ebf0; --muted: #9aa3b2;
+    --rule: #2b313c; --rule-strong: #3d4552; --accent: #79aee3; --accent-fg: #0b1220; --accent-soft: #1b2a3b;
+    --high: #f08a7e; --high-soft: #3a1d1a; --med: #e5b25d; --med-soft: #33281a; --low: #6cc79a; --low-soft: #17301f;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1218; --surface: #171b23; --sunk: #1e232d; --fg: #e8ebf0; --muted: #9aa3b2;
+  --rule: #2b313c; --rule-strong: #3d4552; --accent: #79aee3; --accent-fg: #0b1220; --accent-soft: #1b2a3b;
+  --high: #f08a7e; --high-soft: #3a1d1a; --med: #e5b25d; --med-soft: #33281a; --low: #6cc79a; --low-soft: #17301f;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.5; margin: 0; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.25; text-wrap: balance; }
+p { margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.mono { font-family: var(--mono); font-size: .82em; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+/* App bar */
+.appbar { background: var(--surface); border-bottom: 1px solid var(--rule); padding-inline: 16px; }
+.appbar-in { max-width: 82rem; margin: 0 auto; display: flex; align-items: center; gap: 24px; min-height: 52px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.01em; }
+.brand-mark { width: 22px; height: 22px; border-radius: 5px; background: var(--accent); display: grid; place-items: center; }
+.brand-mark svg { display: block; }
+.brand small { font-weight: 500; color: var(--muted); font-size: 13px; }
+.appnav { display: flex; gap: 4px; font-size: 14px; color: var(--muted); }
+.appnav span { padding: 6px 10px; border-radius: var(--r); }
+.appnav .on { color: var(--fg); background: var(--sunk); font-weight: 600; }
+.who { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--accent-soft); color: var(--accent); flex: none; }
+
+/* Page */
+.page { max-width: 82rem; margin: 0 auto; padding-inline: 16px; padding-block: 24px 48px; }
+.crumbs { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.req-head { display: grid; gap: 14px; margin-bottom: 20px; }
+.req-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.req-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -.015em; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.wait { background: var(--med-soft); color: var(--med); }
+.pill.ok { background: var(--low-soft); color: var(--low); }
+.pill.no { background: var(--high-soft); color: var(--high); }
+.req-meta { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 14px; color: var(--muted); }
+.req-meta b { color: var(--fg); font-weight: 600; }
+.purpose { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; max-width: 52rem; }
+.purpose q { font-size: 15.5px; quotes: "\201C" "\201D"; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 22rem; gap: 24px; align-items: start; }
+.work { display: grid; gap: 20px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; min-width: 0; }
+.card-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--rule); display: grid; gap: 4px; }
+.card-head h2 { font-size: 17px; font-weight: 700; }
+.card-head p { color: var(--muted); font-size: 14px; max-width: 60ch; }
+.card-body { padding: 4px 20px 20px; }
+.step { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* Plain-language summary of the original request */
+.asked { padding: 16px 20px 20px; display: grid; gap: 10px; }
+.asked ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.asked li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; }
+.asked li svg { margin-top: 3px; }
+.flag-high { color: var(--high); }
+.flag-med { color: var(--med); }
+
+/* Capability rows */
+.group-label { margin-top: 18px; margin-bottom: 2px; }
+.cap { padding-block: 14px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: 8px 20px; }
+.group-label + .cap { border-top: 0; }
+.cap-name { display: grid; gap: 4px; align-content: start; }
+.cap-name h3 { font-size: 15px; font-weight: 600; }
+.cap-name .mono { color: var(--muted); }
+.hint { font-size: 12.5px; display: inline-flex; gap: 6px; align-items: flex-start; color: var(--muted); }
+.hint.warn { color: var(--med); }
+.opts { display: grid; gap: 6px; min-width: 0; }
+.opt { position: relative; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 9px 12px; border: 1px solid var(--rule); border-radius: var(--r); cursor: pointer; background: var(--surface); transition: border-color .12s, background-color .12s; }
+.opt:hover { border-color: var(--rule-strong); }
+.opt input { margin: 3px 0 0; accent-color: var(--accent); width: 16px; height: 16px; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opt-label { font-size: 14px; font-weight: 500; }
+.opt-sub { display: block; font-size: 12.5px; color: var(--muted); font-weight: 400; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; background: var(--sunk); color: var(--muted); white-space: nowrap; align-self: center; }
+.inline-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.inline-opts .opt { grid-template-columns: 18px auto auto; }
+
+/* Guardrails */
+.composer { display: grid; gap: 10px; margin-top: 14px; }
+.composer label { font-weight: 600; font-size: 14px; }
+textarea { width: 100%; min-height: 72px; resize: vertical; padding: 10px 12px; border: 1px solid var(--rule-strong); border-radius: var(--r); background: var(--surface); line-height: 1.45; }
+textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.sugs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sug { border: 1px dashed var(--rule-strong); background: transparent; border-radius: 999px; padding: 4px 11px; font-size: 13px; color: var(--muted); cursor: pointer; text-align: left; }
+.sug:hover { color: var(--fg); border-color: var(--accent); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--rule-strong); background: var(--surface); padding: 8px 14px; border-radius: var(--r); font-weight: 600; font-size: 14px; cursor: pointer; }
+.btn:hover { background: var(--sunk); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+.btn.danger { color: var(--high); }
+.btn.link { border: 0; background: none; padding: 4px 2px; color: var(--accent); font-weight: 600; }
+.btn.link:hover { text-decoration: underline; background: none; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.block { width: 100%; justify-content: center; }
+
+.interp { border: 1px solid var(--accent); border-radius: 8px; background: var(--surface); overflow: hidden; }
+.interp-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 14px; background: var(--accent-soft); font-size: 13px; font-weight: 600; color: var(--accent); flex-wrap: wrap; }
+.interp-body { padding: 14px; display: grid; gap: 12px; }
+.clauses { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 14px; align-items: baseline; margin: 0; }
+.clauses dt { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: .06em; color: var(--muted); }
+.clauses dd { margin: 0; font-size: 14.5px; }
+.notes { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.notes li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 13.5px; padding: 8px 10px; border-radius: var(--r); background: var(--med-soft); color: var(--fg); }
+.notes li svg { color: var(--med); margin-top: 2px; }
+.notes li.err { background: var(--high-soft); }
+.notes li.err svg { color: var(--high); }
+.policy { margin: 0; font-family: var(--mono); font-size: 12.5px; background: var(--sunk); border-radius: var(--r); padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.tries { display: grid; gap: 6px; }
+.try { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13.5px; padding: 6px 0; border-top: 1px solid var(--rule); }
+
+.rules { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.rule { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 14px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--surface); }
+.rule-text { font-weight: 600; font-size: 14.5px; }
+.rule-sum { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+.empty { padding: 14px; border: 1px dashed var(--rule-strong); border-radius: var(--r); color: var(--muted); font-size: 14px; margin-top: 14px; }
+
+/* Result badges */
+.res { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 9px; border-radius: 4px; white-space: nowrap; }
+.res.allow { background: var(--low-soft); color: var(--low); }
+.res.ask { background: var(--med-soft); color: var(--med); }
+.res.block { background: var(--high-soft); color: var(--high); }
+.res.na { background: var(--sunk); color: var(--muted); }
+
+/* Preview as person */
+.people { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.person { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); cursor: pointer; font-size: 14px; text-align: left; }
+.person[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.person small { display: block; font-size: 12px; color: var(--muted); }
+.person .avatar { width: 26px; height: 26px; font-size: 11px; }
+.eff-wrap { overflow-x: auto; margin-top: 16px; }
+table.eff { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 34rem; }
+.eff th, .eff td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.eff thead th { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .03em; }
+.eff tbody th { font-weight: 600; }
+.eff td.final { font-weight: 600; background: var(--accent-soft); }
+.eff .cap-off { color: var(--muted); font-weight: 400; }
+.overlap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; font-size: 13.5px; color: var(--muted); }
+.cant { margin-top: 16px; padding: 14px 16px; border-radius: var(--r); background: var(--sunk); font-size: 14px; }
+.acts { margin-top: 20px; display: grid; }
+.act { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; padding: 10px 0; border-top: 1px solid var(--rule); align-items: center; }
+.act-name { font-size: 14px; font-weight: 500; }
+.act-why { grid-column: 1 / -1; font-size: 12.5px; color: var(--muted); }
+
+/* Blast radius rail */
+.rail { position: sticky; top: calc(var(--top-h, 110px) + 16px); display: grid; gap: 12px; }
+.radius { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
+.radius-head { padding: 16px 18px 14px; display: grid; gap: 10px; border-bottom: 1px solid var(--rule); }
+.radius-head h2 { font-size: 15px; font-weight: 700; }
+.radius-head p { font-size: 13px; color: var(--muted); }
+.risk { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.risk-level { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.risk-level.high { color: var(--high); }
+.risk-level.med { color: var(--med); }
+.risk-level.low { color: var(--low); }
+.meter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; width: 96px; }
+.meter i { height: 6px; border-radius: 2px; background: var(--sunk); }
+.meter.low i:nth-child(1) { background: var(--low); }
+.meter.med i:nth-child(-n+2) { background: var(--med); }
+.meter.high i { background: var(--high); }
+.was { font-size: 12.5px; color: var(--muted); }
+.reach { margin: 0; padding: 4px 18px 6px; list-style: none; }
+.reach li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.reach li:last-child { border-bottom: 0; }
+.reach .k { font-size: 13px; color: var(--muted); }
+.reach .v { font-size: 15px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.reach .d { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.reach .d s { opacity: .8; }
+.reach li.changed .v { color: var(--low); }
+.reach .guard { color: var(--med); font-weight: 600; }
+.radius-foot { padding: 14px 18px 18px; display: grid; gap: 8px; background: var(--sunk); border-top: 1px solid var(--rule); }
+.radius-foot .btn-row .btn { flex: 1 1 auto; }
+.fineprint { font-size: 12px; color: var(--muted); }
+
+@keyframes pulse { from { background: var(--accent-soft); } to { background: transparent; } }
+.reach li.flash { animation: pulse .9s ease-out; }
+
+/* Overlay */
+.scrim { z-index: 60; position: fixed; inset: 0; background: rgba(10, 14, 20, .5); display: grid; place-items: center; padding: 16px; z-index: 50; overflow-y: auto; }
+.sheet { background: var(--surface); border-radius: 10px; width: min(44rem, 100%); max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.sheet-head { padding: 20px 22px 12px; display: grid; gap: 4px; border-bottom: 1px solid var(--rule); }
+.sheet-head h2 { font-size: 19px; }
+.sheet-body { padding: 16px 22px; display: grid; gap: 18px; }
+.sheet-foot { padding: 14px 22px 20px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--rule); }
+.diff { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.diff th, .diff td { text-align: left; padding: 8px 8px 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.diff thead th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.diff s { color: var(--muted); }
+.diff .same { color: var(--muted); }
+.before-after { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 10px; }
+.ba { padding: 10px 12px; background: var(--sunk); border-radius: var(--r); display: grid; gap: 2px; }
+.ba .k { font-size: 12px; color: var(--muted); }
+.ba .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ba .v s { font-weight: 500; color: var(--muted); margin-right: 6px; }
+#outcome { scroll-margin-top: calc(var(--top-h, 110px) + 12px); }
+.done { display: grid; gap: 10px; padding: 18px 20px; border-radius: 8px; background: var(--low-soft); border: 1px solid var(--low); margin-bottom: 20px; }
+.done.denied { background: var(--high-soft); border-color: var(--high); }
+.done h2 { font-size: 17px; }
+
+.proto-note a { color: var(--accent); }
+.proto-note { max-width: 82rem; margin: 0 auto; padding-inline: 16px; padding-block: 0 32px; font-size: 12.5px; color: var(--muted); }
+
+@media (max-width: 1020px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; order: -1; }
+}
+@media (max-width: 640px) {
+  .cap { grid-template-columns: minmax(0, 1fr); }
+  .appnav { display: none; }
+  .req-title h1 { font-size: 22px; }
+  .card-head, .asked { padding-inline: 16px; }
+  .card-body { padding-inline: 16px; }
+  .clauses { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .clauses dd { margin-bottom: 8px; }
+}
+/* Sticky top: app bar plus a slim request bar that keeps risk and the decision in reach */
+.top { position: sticky; top: 0; z-index: 30; padding-top: env(safe-area-inset-top, 0px); background: var(--surface); box-shadow: 0 1px 0 var(--rule); }
+.reqbar { border-top: 1px solid var(--rule); padding-inline: 16px; background: var(--surface); }
+.reqbar-in { max-width: 82rem; margin: 0 auto; display: flex; align-items: center; gap: 8px 14px; min-height: 48px; padding-block: 6px; flex-wrap: wrap; }
+.reqbar-name { font-weight: 700; font-size: 15px; }
+.reqbar-risk { display: flex; align-items: baseline; gap: 10px; min-width: 0; flex: 1 1 14rem; }
+.bar-risk { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.bar-risk.high { color: var(--high); } .bar-risk.med { color: var(--med); } .bar-risk.low { color: var(--low); }
+.bar-sum { font-size: 12.5px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn.sm { padding: 6px 12px; font-size: 13px; }
+@media (max-width: 640px) {
+  .appbar-in { min-height: 44px; gap: 12px; }
+  .who span:last-child { display: none; }
+  .reqbar-name, #bar-pill { display: none; }
+  .reqbar-in { flex-wrap: nowrap; }
+  .reqbar-risk { flex: 1 1 0; flex-direction: column; gap: 0; }
+  .bar-sum { white-space: normal; font-size: 12px; line-height: 1.3; }
+  .btn.sm { white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+
+<div class="top" id="top">
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 10V2l4 4 4-4v8" fill="none" stroke="var(--accent-fg)" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+      Mandate <small>Larkspur Supply Co.</small>
+    </div>
+    <nav class="appnav" aria-label="Sections (not part of the prototype)">
+      <span>Agents</span><span class="on">Access requests</span><span>Audit log</span>
+    </nav>
+    <div class="who"><span class="avatar" aria-hidden="true">PS</span><span>Priya Shah · IT security</span></div>
+  </div>
+</header>
+<div class="reqbar">
+  <div class="reqbar-in">
+    <span class="reqbar-name">Renewal agent</span>
+    <span class="pill wait" id="bar-pill">Waiting for your review</span>
+    <span class="reqbar-risk"><span class="bar-risk high" id="bar-risk">High risk</span><span class="bar-sum" id="bar-sum"></span></span>
+    <button class="btn primary sm" id="bar-approve" type="button">Review and approve</button>
+  </div>
+</div>
+</div>
+
+<main class="page">
+  <div class="crumbs">Access requests / AR-2291</div>
+  <div id="outcome"></div>
+  <div class="req-head">
+    <div class="req-title">
+      <h1>Renewal agent</h1>
+      <span class="pill wait" id="status-pill">Waiting for your review</span>
+    </div>
+    <div class="req-meta">
+      <span>Requested by <b>Marcus Chen</b>, AI engineering</span>
+      <span>For <b>Dana Reyes</b>'s sales team</span>
+      <span>Submitted Oct 10, 9:14 AM</span>
+    </div>
+    <div class="purpose">
+      <span class="eyebrow">What the agent is for, in Marcus's words</span>
+      <q>Finds customer accounts with renewals due in the next 90 days, drafts a renewal email to the customer contact, and books a follow-up call. Logs the next step on the account.</q>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="work">
+
+      <section class="card" aria-labelledby="asked-h">
+        <div class="card-head">
+          <span class="step">1 · The request</span>
+          <h2 id="asked-h">What approving this as requested would allow</h2>
+        </div>
+        <div class="asked"><ul id="asked-list"></ul></div>
+      </section>
+
+      <section class="card" aria-labelledby="access-h">
+        <div class="card-head">
+          <span class="step">2 · Access</span>
+          <h2 id="access-h">Narrow it to what the job needs</h2>
+          <p>The agent always acts for one person at a time and can never do more than that person can. These limits apply on top of that.</p>
+        </div>
+        <div class="card-body" id="access"></div>
+      </section>
+
+      <section class="card" aria-labelledby="guard-h">
+        <div class="card-head">
+          <span class="step">3 · Guardrails</span>
+          <h2 id="guard-h">Decide when it has to ask a person first</h2>
+          <p>Write a rule in plain words. Check how it was understood before you add it.</p>
+        </div>
+        <div class="card-body">
+          <ul class="rules" id="rules"></ul>
+          <div class="composer">
+            <label for="rule-input">New rule</label>
+            <textarea id="rule-input" placeholder="For example: Ask Dana before emailing anyone outside the company"></textarea>
+            <div class="sugs" id="sugs"><span class="fineprint">Try:</span></div>
+            <div class="btn-row"><button class="btn" id="interpret" type="button">Check this rule</button></div>
+            <div id="interp"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="preview-h">
+        <div class="card-head">
+          <span class="step">4 · Preview</span>
+          <h2 id="preview-h">See what it could do for each person</h2>
+          <p>What the agent can actually do is the overlap of what you allow and what the person it's acting for can already do.</p>
+        </div>
+        <div class="card-body">
+          <div class="people" id="people" role="group" aria-label="Preview as"></div>
+          <div id="preview"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="rail" aria-label="Blast radius">
+      <div class="radius">
+        <div class="radius-head">
+          <div>
+            <h2>Blast radius</h2>
+            <p>The most this agent could reach if it went wrong, across everyone who can use it.</p>
+          </div>
+          <div class="risk">
+            <span class="risk-level" id="risk-level">High</span>
+            <span class="meter" id="meter" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <span class="was" id="risk-was"></span>
+        </div>
+        <ul class="reach" id="reach" aria-live="polite"></ul>
+        <div class="radius-foot">
+          <div class="btn-row">
+            <button class="btn primary" id="approve" type="button">Review and approve</button>
+            <button class="btn danger" id="deny" type="button">Deny</button>
+          </div>
+          <button class="btn link" id="reset" type="button">Reset to the original request</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<p class="proto-note">Concept prototype by Shaun Burley. <a href="../../work/agent-access-review/">Read the case study</a>. Larkspur Supply Co., Mandate, and every person and number here are made up. The rule interpretation is scripted to simulate an AI model.</p>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-h" id="sheet"></div>
+</div>
+
+<script>
+(() => {
+  const ICON = {
+    warn: '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 15 14H1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3.5M8 11.3v.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    dot: '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.5" fill="currentColor"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 7v4.5M8 4.6v.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  const fmt = n => n.toLocaleString('en-US');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---------- Data ----------
+  const TEAM_SIZE = 9, COMPANY_SIZE = 1180, ALL_ACCOUNTS = 4812, TEAM_ACCOUNTS = 1240, PLAYBOOK = 46;
+
+  const PEOPLE = [
+    { id: 'dana', init: 'DR', name: 'Dana Reyes', first: 'Dana', role: 'Sales manager', team: true, crmRead: 1240, crmOwned: 212, crmEdit: 1240, calOthers: 8, calOthersWho: 'her 8 reports', files: 2310, drives: 6, finance: false },
+    { id: 'jordan', init: 'JP', name: 'Jordan Park', first: 'Jordan', role: 'Account executive', team: true, crmRead: 1240, crmOwned: 64, crmEdit: 64, calOthers: 0, files: 1120, drives: 4, finance: false },
+    { id: 'sam', init: 'SO', name: 'Sam Okafor', first: 'Sam', role: 'Sales intern', team: true, crmRead: 64, crmOwned: 0, crmEdit: 0, calOthers: 0, files: 46, drives: 0, finance: false },
+    { id: 'lee', init: 'LW', name: 'Lee Whitfield', first: 'Lee', role: 'Chief financial officer', team: false, crmRead: 4812, crmOwned: 0, crmEdit: 0, calOthers: 12, calOthersWho: 'the leadership team', files: 18400, drives: 37, finance: true }
+  ];
+
+  const CAPS = [
+    { id: 'crmRead', group: 'Customer accounts', title: 'Read accounts', scope: 'crm.accounts.read', hint: 'Needed to find renewals due.', requested: 'all',
+      options: [
+        { v: 'none', label: 'No access' },
+        { v: 'owned', label: 'Only accounts the person owns' },
+        { v: 'team', label: "The sales team's accounts", sub: fmt(TEAM_ACCOUNTS) + ' accounts' },
+        { v: 'all', label: 'Every account in the company', sub: fmt(ALL_ACCOUNTS) + ' accounts' } ] },
+    { id: 'crmWrite', title: 'Change accounts', scope: 'crm.accounts.write', hint: 'Purpose only mentions logging the next step.', requested: 'any',
+      options: [
+        { v: 'none', label: 'No changes' },
+        { v: 'notes', label: 'Notes and next-step fields only' },
+        { v: 'any', label: 'Any field', sub: 'Including account owner and contract value' } ] },
+    { id: 'mailRead', group: 'Email', title: 'Read email', scope: 'mail.read', hint: 'Needed to see recent customer conversation.', requested: 'all',
+      options: [
+        { v: 'none', label: 'No access' },
+        { v: 'customer', label: 'Only threads with customer contacts' },
+        { v: 'all', label: 'The whole mailbox', sub: 'Including HR, legal and personal mail' } ] },
+    { id: 'mailSend', title: 'Send email', scope: 'mail.send', hint: 'Needed to send renewal emails.', requested: 'any',
+      options: [
+        { v: 'none', label: 'No sending' },
+        { v: 'draft', label: 'Write drafts; the person sends them' },
+        { v: 'internal', label: 'Send to colleagues only' },
+        { v: 'any', label: 'Send to anyone' } ] },
+    { id: 'cal', group: 'Calendar', title: 'Calendar', scope: 'calendar.events', hint: 'Needed to book follow-up calls.', requested: 'full',
+      options: [
+        { v: 'none', label: 'No access' },
+        { v: 'freebusy', label: 'See when people are free' },
+        { v: 'own', label: "Create and change events on the person's own calendar" },
+        { v: 'full', label: 'Change any calendar the person can change', sub: "Including calendars they've been given access to" } ] },
+    { id: 'files', group: 'Files', title: 'Open files', scope: 'files.read', hint: "Not mentioned in the agent's purpose.", warn: true, requested: 'all',
+      options: [
+        { v: 'none', label: 'No access' },
+        { v: 'playbook', label: 'Sales playbook folder only', sub: PLAYBOOK + ' files' },
+        { v: 'all', label: 'Every shared drive the person can open' } ] }
+  ];
+  const WHO = { id: 'who', title: 'Who can use it', requested: 'everyone',
+    options: [ { v: 'team', label: "Dana's sales team", sub: TEAM_SIZE + ' people' }, { v: 'everyone', label: 'Everyone at Larkspur', sub: fmt(COMPANY_SIZE) + ' people' } ] };
+  const EXPIRY = { id: 'expiry', title: 'Access ends', requested: 'never',
+    options: [ { v: '30', label: 'After 30 days' }, { v: '90', label: 'After 90 days' }, { v: '180', label: 'After 180 days' }, { v: 'never', label: 'Never' } ] };
+
+  const ACTIONS = [
+    { id: 'a1', label: 'Email a renewal quote to the customer contact at Fenwick Tools', cap: 'mailSend', need: ['any'], ext: true, p: 'mail' },
+    { id: 'a2', label: 'Email a renewal summary to a teammate', cap: 'mailSend', need: ['internal', 'any'], ext: false, p: 'mail' },
+    { id: 'a3', label: 'Read the latest thread with the Fenwick Tools contact', cap: 'mailRead', need: ['customer', 'all'], p: 'mailread' },
+    { id: 'a4', label: 'Log "Call booked for Oct 14" as the next step on an account', cap: 'crmWrite', need: ['notes', 'any'], field: 'notes', p: 'crmEditOwned' },
+    { id: 'a5', label: 'Change who owns the Fenwick Tools account', cap: 'crmWrite', need: ['any'], field: 'owner', p: 'crmEditOwned' },
+    { id: 'a6', label: 'Book a 30-minute call with the customer on the person’s calendar', cap: 'cal', need: ['own', 'full'], ext: true, p: 'cal' },
+    { id: 'a7', label: "Move a meeting on the CEO's calendar", cap: 'cal', need: ['full'], p: 'ceoCal' },
+    { id: 'a8', label: 'Open the Q3 board deck in the Finance drive', cap: 'files', need: ['all'], p: 'finance' }
+  ];
+
+  const SUGGESTIONS = [
+    'Ask Dana before emailing anyone outside the company',
+    'Never change the account owner',
+    'Check with the person’s manager before booking meetings with customers',
+    'Don’t let it email customers without asking within 4 hours'
+  ];
+
+  // ---------- State ----------
+  const requestedState = () => {
+    const s = { who: WHO.requested, expiry: EXPIRY.requested };
+    CAPS.forEach(c => s[c.id] = c.requested);
+    return s;
+  };
+  let state = requestedState();
+  let rules = [];
+  let draft = null;
+  let previewId = 'dana';
+  let decided = null;
+  let lastReach = null;
+
+  // ---------- Model ----------
+  function personAllowed(p, s = state) { return s.who === 'everyone' || p.team; }
+
+  function effective(p, s = state) {
+    const crmRead = { none: 0, owned: p.crmOwned, team: Math.min(TEAM_ACCOUNTS, p.crmRead), all: p.crmRead }[s.crmRead];
+    const crmEdit = s.crmWrite === 'none' || s.crmRead === 'none' ? 0 : Math.min(p.crmEdit, crmRead);
+    const otherCals = s.cal === 'full' ? p.calOthers : 0;
+    const files = { none: 0, playbook: Math.min(PLAYBOOK, p.files), all: p.files }[s.files];
+    return { crmRead, crmEdit, otherCals, files };
+  }
+
+  function usersOf(s = state) { return PEOPLE.filter(p => personAllowed(p, s)); }
+  function userCount(s = state) { return s.who === 'everyone' ? COMPANY_SIZE : TEAM_SIZE; }
+
+  function hasRule(action, pred = () => true, rs = rules) { return rs.find(r => r.action === action && pred(r)); }
+  function guardFor(cap, rs = rules) {
+    if (cap === 'mailSend') return hasRule('mail.send', r => r.recipient !== 'internal', rs);
+    if (cap === 'crmWrite') return hasRule('crm.write', () => true, rs);
+    if (cap === 'cal') return hasRule('calendar', () => true, rs);
+    if (cap === 'files') return hasRule('files', () => true, rs);
+    return null;
+  }
+
+  function reach(s = state, rs = rules) {
+    const us = usersOf(s);
+    const max = k => Math.max(0, ...us.map(p => effective(p, s)[k]));
+    const n = userCount(s);
+    return {
+      crmRead: max('crmRead'),
+      crmEdit: s.crmWrite === 'none' ? 0 : max('crmEdit'),
+      crmEditFields: s.crmWrite === 'notes' ? 'notes and next steps' : s.crmWrite === 'any' ? 'any field' : '',
+      mailboxes: s.mailRead === 'none' ? 0 : n,
+      mailScope: s.mailRead === 'all' ? 'whole mailboxes' : s.mailRead === 'customer' ? 'customer threads only' : '',
+      send: { none: 'No one', draft: 'No one', internal: fmt(COMPANY_SIZE) + ' colleagues', any: 'Anyone' }[s.mailSend],
+      sendDetail: { none: '', draft: 'Drafts only. A person sends them.', internal: 'Inside Larkspur only', any: 'Including any address outside Larkspur' }[s.mailSend],
+      calendars: s.cal === 'none' || s.cal === 'freebusy' ? 0 : (s.cal === 'own' ? n : n + max('otherCals')),
+      files: max('files'),
+      expiry: s.expiry === 'never' ? 'Never ends' : s.expiry + ' days',
+      users: n
+    };
+  }
+
+  function riskScore(s = state, rs = rules) {
+    let pts = 0;
+    pts += { none: 0, owned: 1, team: 2, all: 3 }[s.crmRead];
+    pts += { none: 0, notes: 1, any: 3 }[s.crmWrite];
+    if (s.crmWrite === 'any' && hasRule('crm.write', r => r.field === 'owner' || r.field === 'any', rs)) pts -= 1;
+    pts += { none: 0, customer: 1, all: 3 }[s.mailRead];
+    let send = { none: 0, draft: 0, internal: 1, any: 3 }[s.mailSend];
+    if (s.mailSend === 'any' && hasRule('mail.send', r => r.recipient !== 'internal', rs)) send = 1;
+    pts += send;
+    pts += { none: 0, freebusy: 0, own: 1, full: 2 }[s.cal];
+    pts += { none: 0, playbook: 0, all: 3 }[s.files];
+    pts += s.who === 'everyone' ? 2 : 0;
+    pts += { '30': 0, '90': 0, '180': 1, never: 2 }[s.expiry];
+    return pts;
+  }
+  function riskOf(s = state, rs = rules) {
+    const p = riskScore(s, rs);
+    return p >= 14 ? { k: 'high', label: 'High' } : p >= 7 ? { k: 'med', label: 'Medium' } : { k: 'low', label: 'Low' };
+  }
+
+  // ---------- Rule interpreter (scripted stand-in for an AI model) ----------
+  function interpret(text) {
+    const t = text.toLowerCase().replace(/[‘’]/g, "'").trim();
+    const notes = [];
+    if (t.length < 6) return { error: 'Write a rule as a sentence, for example "Ask Dana before emailing customers."' };
+
+    let action = null;
+    const changeVerb = /\b(change|changes|changing|edit|update|modify|delete|reassign|transfer|move)\b/;
+    if (/\b(owner|contract value|account field|crm)\b/.test(t) || (/\baccounts?\b/.test(t) && changeVerb.test(t) && !/\b(email|e-mail|mail)\b/.test(t))) action = 'crm.write';
+    else if (/\b(meeting|meetings|calendar|invite|invites|book|booking|schedule|call|calls)\b/.test(t)) action = 'calendar';
+    else if (/\b(email|emails|emailing|e-mail|mail|send|sending|message|messages|write to|contact)\b/.test(t)) action = 'mail.send';
+    else if (/\b(file|files|document|documents|drive|drives|deck|folder)\b/.test(t)) action = 'files';
+    if (!action) return { error: "I couldn't tell which action this rule is about. Name one: sending email, changing accounts, booking meetings, or opening files." };
+
+    let effect = null;
+    if (/\b(ask|asking|approv\w*|check with|checking with|confirm|permission|sign[- ]?off|ok from|okay from)\b/.test(t)) effect = 'approve';
+    else if (/\b(never|don't|do not|block|not allowed|prevent|stop|can't|cannot|no)\b/.test(t)) effect = 'block';
+    if (!effect) return { error: 'Say whether the agent should ask someone first or never do this at all.' };
+
+    const r = { action, effect, text: text.trim() };
+
+    if (action === 'mail.send') {
+      if (/\b(outside|external|customer|customers|client|clients|anyone not|vendor|vendors|partner)\b/.test(t)) r.recipient = 'external';
+      else if (/\b(colleague|colleagues|internal|coworker|coworkers|teammate|teammates|inside)\b/.test(t)) r.recipient = 'internal';
+      else { r.recipient = 'any'; notes.push('You didn’t say which recipients, so this applies to every email the agent sends, including to colleagues.'); }
+    }
+    if (action === 'crm.write') {
+      if (/\bowner\b/.test(t)) r.field = 'owner';
+      else if (/\b(contract value|amount|price|value)\b/.test(t)) r.field = 'value';
+      else r.field = 'any';
+    }
+    if (action === 'calendar') {
+      r.attendees = /\b(customer|customers|external|outside|client|clients)\b/.test(t) ? 'external' : 'any';
+    }
+
+    if (effect === 'approve') {
+      if (/\bmanager\b/.test(t)) r.approver = 'manager';
+      else if (/\bsecurity\b/.test(t)) r.approver = 'security';
+      else if (/\b(dana|jordan|sam|lee)\b/.test(t)) {
+        r.approver = 'person';
+        const nm = t.match(/\b(dana|jordan|sam|lee)\b/)[1];
+        const N = nm[0].toUpperCase() + nm.slice(1);
+        notes.push(`You named ${N}. Rules apply to everyone who uses the agent, so I read this as “the person the agent is acting for.” When it acts for ${N}, that’s ${N}.`);
+      } else if (/\b(the person|the user|whoever|on behalf|acting for|they)\b/.test(t)) r.approver = 'person';
+      else { r.approver = 'person'; notes.push('You didn’t say who approves. I assumed the person the agent is acting for.'); }
+
+      const m = t.match(/(\d+)\s*(minute|min|hour|hr|day)s?/);
+      if (m) r.timeout = `${m[1]} ${m[2].startsWith('min') ? 'minute' : m[2].startsWith('h') ? 'hour' : 'day'}${m[1] === '1' ? '' : 's'}`;
+      else { r.timeout = '24 hours'; notes.push('You didn’t say how long to wait. If no one answers in 24 hours, the agent cancels the action.'); }
+    }
+
+    // Does the rule do anything with current access?
+    const capOf = { 'mail.send': 'mailSend', 'crm.write': 'crmWrite', calendar: 'cal', files: 'files' }[action];
+    const v = state[capOf];
+    const inert = (action === 'mail.send' && (v === 'none' || v === 'draft' || (v === 'internal' && r.recipient === 'external')))
+      || (action === 'crm.write' && (v === 'none' || (v === 'notes' && r.field !== 'any')))
+      || (action === 'calendar' && (v === 'none' || v === 'freebusy'))
+      || (action === 'files' && v === 'none');
+    if (inert) notes.push('With the access you’ve set, the agent can’t do this anyway, so this rule changes nothing right now. It will apply if access is widened later.');
+
+    return { rule: r, notes };
+  }
+
+  function approverName(r, p) {
+    if (r.approver === 'manager') return p && p.id !== 'dana' && p.team ? 'Dana (their manager)' : 'their manager';
+    if (r.approver === 'security') return 'IT security';
+    return p ? p.first : 'the person it’s acting for';
+  }
+  function clauseWhen(r) {
+    if (r.action === 'mail.send') return r.recipient === 'external' ? 'The agent sends email to someone outside Larkspur' : r.recipient === 'internal' ? 'The agent sends email to a colleague' : 'The agent sends any email';
+    if (r.action === 'crm.write') return r.field === 'owner' ? 'The agent changes who owns an account' : r.field === 'value' ? 'The agent changes a contract value' : 'The agent changes any account field';
+    if (r.action === 'calendar') return r.attendees === 'external' ? 'The agent books or changes a meeting with customers' : 'The agent books or changes any meeting';
+    return 'The agent opens a file';
+  }
+  function clauseThen(r) {
+    return r.effect === 'block' ? 'Block it. Nobody can approve an exception.' : `Pause and ask ${r.approver === 'manager' ? 'the manager of the person it’s acting for' : r.approver === 'security' ? 'IT security' : 'the person it’s acting for'} to approve`;
+  }
+  function policyText(r) {
+    const cond = r.action === 'mail.send' ? `recipient.domain ${r.recipient === 'external' ? '!=' : r.recipient === 'internal' ? '==' : 'any'} "larkspur.com"`
+      : r.action === 'crm.write' ? `field ${r.field === 'any' ? 'any' : '== "' + (r.field === 'owner' ? 'account.owner' : 'contract.value') + '"'}`
+      : r.action === 'calendar' ? `attendees ${r.attendees === 'external' ? 'include external' : 'any'}` : 'path any';
+    const lines = [`on: ${r.action}`, `where: ${cond}`];
+    if (r.effect === 'block') lines.push('effect: deny');
+    else lines.push('effect: require_approval', `approver: ${r.approver === 'person' ? 'delegating_user' : r.approver === 'manager' ? 'delegating_user.manager' : 'group:it-security'}`, `timeout: ${r.timeout}`, 'on_timeout: cancel');
+    return lines.join('\n');
+  }
+  function ruleSummary(r) {
+    return r.effect === 'block' ? `${clauseWhen(r)}: blocked.` : `${clauseWhen(r)}: asks ${r.approver === 'manager' ? 'their manager' : r.approver === 'security' ? 'IT security' : 'the person it acts for'} first. Cancels after ${r.timeout} with no answer.`;
+  }
+
+  function ruleMatches(r, a) {
+    const action = { mailSend: 'mail.send', crmWrite: 'crm.write', cal: 'calendar', files: 'files' }[a.cap];
+    if (r.action !== action) return false;
+    if (action === 'mail.send') return r.recipient === 'any' || (r.recipient === 'external') === a.ext;
+    if (action === 'crm.write') return r.field === 'any' || r.field === a.field;
+    if (action === 'calendar') return r.attendees === 'any' || (r.attendees === 'external' && a.ext);
+    return true;
+  }
+
+  // ---------- Evaluate an action for a person ----------
+  function evaluate(a, p, s = state, rs = rules) {
+    if (!personAllowed(p, s)) return { k: 'na', label: 'Can’t use agent', why: `${p.first} isn't allowed to use this agent.` };
+    const capDef = CAPS.find(c => c.id === a.cap);
+    if (!a.need.includes(s[a.cap])) {
+      const opt = capDef.options.find(o => o.v === s[a.cap]);
+      return { k: 'block', label: 'Not allowed', why: `Agent access for “${capDef.title}” is set to “${opt.label}.”` };
+    }
+    if (a.p === 'crmEditOwned' && (p.crmEdit === 0)) return { k: 'block', label: 'Not allowed', why: `${p.first} can't change accounts, so the agent can't either.` };
+    if (a.p === 'crmEditOwned' && effective(p, s).crmEdit === 0) return { k: 'block', label: 'Not allowed', why: `The agent can't read any accounts for ${p.first} with the current access.` };
+    if (a.p === 'ceoCal' && !p.finance) return { k: 'block', label: 'Not allowed', why: `${p.first} can't change the CEO's calendar, so the agent can't either.` };
+    if (a.p === 'finance' && !p.finance) return { k: 'block', label: 'Not allowed', why: `${p.first} can't open the Finance drive, so the agent can't either.` };
+    const hit = rs.filter(r => ruleMatches(r, a));
+    const block = hit.find(r => r.effect === 'block');
+    if (block) return { k: 'block', label: 'Blocked by rule', why: `Your rule: “${block.text}”` };
+    const ask = hit.find(r => r.effect === 'approve');
+    if (ask) return { k: 'ask', label: `Asks ${approverName(ask, p)} first`, why: `Your rule: “${ask.text}”` };
+    return { k: 'allow', label: 'Allowed', why: a.p === 'ceoCal' || a.p === 'finance' ? `${p.first} can do this, so the agent can too.` : 'Within the access you set.' };
+  }
+
+  // ---------- Render ----------
+  const $ = id => document.getElementById(id);
+
+  function renderAsked() {
+    const items = [
+      ['high', `Read <b>every customer account</b> in the company (${fmt(ALL_ACCOUNTS)}) and change any field, including who owns an account and its contract value.`],
+      ['high', 'Read the <b>whole mailbox</b> of anyone who uses it, including HR, legal and personal mail.'],
+      ['high', 'Send email <b>to anyone</b>, inside or outside Larkspur, as that person, without asking.'],
+      ['med', 'Change any calendar the person can change, not just their own.'],
+      ['med', 'Open <b>every shared drive</b> the person can open. The agent’s purpose doesn’t mention files.'],
+      ['med', `Be used by <b>everyone at Larkspur</b> (${fmt(COMPANY_SIZE)} people), not just Dana’s team, with <b>no end date</b>.`]
+    ];
+    $('asked-list').innerHTML = items.map(([k, h]) => `<li><span class="flag-${k}">${k === 'high' ? ICON.warn : ICON.dot}</span><span>${h}</span></li>`).join('');
+  }
+
+  function optHTML(def, o, name, inline) {
+    const checked = state[def.id] === o.v ? ' checked' : '';
+    const req = def.requested === o.v ? '<span class="tag">Requested</span>' : '';
+    const sub = o.sub && !inline ? `<span class="opt-sub">${o.sub}</span>` : '';
+    const subInline = o.sub && inline ? ` <span class="opt-sub" style="display:inline">· ${o.sub}</span>` : '';
+    return `<label class="opt"><input type="radio" name="${name}" id="${name}-${o.v}" value="${o.v}"${checked}><span class="opt-label">${o.label}${subInline}${sub}</span>${req}</label>`;
+  }
+
+  function renderAccess() {
+    let html = '';
+    html += `<div class="eyebrow group-label">Who and how long</div>`;
+    [WHO, EXPIRY].forEach(def => {
+      html += `<div class="cap"><div class="cap-name"><h3>${def.title}</h3></div><div class="opts"><div class="inline-opts" role="radiogroup" aria-label="${def.title}">${def.options.map(o => optHTML(def, o, def.id, true)).join('')}</div></div></div>`;
+    });
+    CAPS.forEach(c => {
+      if (c.group) html += `<div class="eyebrow group-label">${c.group}</div>`;
+      html += `<div class="cap"><div class="cap-name"><h3>${c.title}</h3><span class="mono">${c.scope}</span><span class="hint${c.warn ? ' warn' : ''}">${c.warn ? ICON.warn : ICON.info}<span>${c.hint}</span></span></div>
+        <div class="opts" role="radiogroup" aria-label="${c.title}">${c.options.map(o => optHTML(c, o, c.id, false)).join('')}</div></div>`;
+    });
+    $('access').innerHTML = html;
+  }
+
+  function renderReach() {
+    const r = reach();
+    const req = reach(requestedState(), []);
+    const g = cap => guardFor(cap) ? `<span class="guard">${guardFor(cap).effect === 'block' ? 'Some blocked by a rule' : 'Asks a person first'}</span>` : '';
+    const rows = [
+      { id: 'crmRead', k: 'Customer accounts it could read', v: fmt(r.crmRead), was: fmt(req.crmRead), d: '' },
+      { id: 'crmEdit', k: 'Accounts it could change', v: fmt(r.crmEdit), was: fmt(req.crmEdit), d: r.crmEdit ? `${r.crmEditFields} ${state.crmWrite === 'any' ? g('crmWrite') : ''}` : '' },
+      { id: 'mail', k: 'Mailboxes it could read', v: fmt(r.mailboxes), was: fmt(req.mailboxes), d: r.mailScope },
+      { id: 'send', k: 'Who it could email', v: r.send, was: req.send, d: `${r.sendDetail} ${state.mailSend !== 'none' && state.mailSend !== 'draft' ? g('mailSend') : ''}` },
+      { id: 'cal', k: 'Calendars it could change', v: fmt(r.calendars), was: fmt(req.calendars), d: g('cal') },
+      { id: 'files', k: 'Files it could open', v: fmt(r.files), was: fmt(req.files), d: state.files === 'all' ? 'Includes the Finance drive' : '' },
+      { id: 'exp', k: 'How long', v: r.expiry, was: req.expiry, d: '' }
+    ];
+    const prev = lastReach;
+    $('reach').innerHTML = rows.map(x => {
+      const changed = x.v !== x.was;
+      const flash = prev && prev[x.id] !== undefined && prev[x.id] !== (x.v + x.d) ? ' flash' : '';
+      const d = [changed ? `<s>${x.was}</s> requested` : '', x.d].filter(Boolean).join(' · ');
+      return `<li class="${changed ? 'changed' : ''}${flash}"><span class="k">${x.k}</span><span class="v">${x.v}</span>${d.trim() ? `<span class="d">${d}</span>` : ''}</li>`;
+    }).join('');
+    lastReach = Object.fromEntries(rows.map(x => [x.id, x.v + x.d]));
+
+    const risk = riskOf();
+    const reqRisk = riskOf(requestedState(), []);
+    $('risk-level').textContent = risk.label + ' risk';
+    $('risk-level').className = 'risk-level ' + risk.k;
+    $('meter').className = 'meter ' + risk.k;
+    $('bar-risk').textContent = risk.label + ' risk';
+    $('bar-risk').className = 'bar-risk ' + risk.k;
+    $('bar-sum').textContent = `${fmt(r.crmRead)} accounts · ${fmt(r.mailboxes)} mailboxes · emails ${r.send.toLowerCase()}`;
+    $('risk-was').textContent = risk.label === reqRisk.label ? 'Same as the original request' : `Down from ${reqRisk.label.toLowerCase()} as requested`;
+  }
+
+  function renderRules() {
+    if (!rules.length) {
+      $('rules').innerHTML = '<li class="empty">No guardrails yet. Without one, the agent never stops to ask anyone.</li>';
+      return;
+    }
+    $('rules').innerHTML = rules.map((r, i) => `<li class="rule"><span class="rule-text">${esc(r.text)}</span><button class="btn link" type="button" data-remove="${i}">Remove</button><span class="rule-sum">${esc(ruleSummary(r))}</span></li>`).join('');
+  }
+
+  function renderSugs() {
+    $('sugs').innerHTML = '<span class="fineprint">Try:</span>' + SUGGESTIONS.map((s, i) => `<button class="sug" type="button" data-sug="${i}">${esc(s)}</button>`).join('');
+  }
+
+  function renderInterp() {
+    const box = $('interp');
+    if (!draft) { box.innerHTML = ''; return; }
+    if (draft.error) {
+      box.innerHTML = `<ul class="notes"><li class="err">${ICON.warn}<span>${esc(draft.error)}</span></li></ul>`;
+      return;
+    }
+    const r = draft.rule;
+    const p = PEOPLE.find(x => x.id === previewId);
+    const tries = ACTIONS.filter(a => ruleMatches(r, a) || ({ mailSend: 'mail.send', crmWrite: 'crm.write', cal: 'calendar', files: 'files' }[a.cap] === r.action));
+    const trial = tries.map(a => {
+      const res = evaluate(a, p.team || state.who === 'everyone' ? p : PEOPLE[0], state, [...rules, r]);
+      return `<div class="try"><span>${esc(a.label)}</span><span class="res ${res.k}">${esc(res.label)}</span></div>`;
+    }).join('');
+    const who = (p.team || state.who === 'everyone' ? p : PEOPLE[0]).first;
+    box.innerHTML = `<div class="interp">
+      <div class="interp-head"><span>How the rule was understood</span><span class="fineprint">Interpreted by AI. Check it before adding.</span></div>
+      <div class="interp-body">
+        <dl class="clauses">
+          <dt>WHEN</dt><dd>${clauseWhen(r)}</dd>
+          <dt>THEN</dt><dd>${clauseThen(r)}</dd>
+          ${r.effect === 'approve' ? `<dt>NO ANSWER</dt><dd>Cancel the action after ${r.timeout}</dd>` : ''}
+        </dl>
+        ${draft.notes.length ? `<ul class="notes">${draft.notes.map(n => `<li>${ICON.info}<span>${esc(n)}</span></li>`).join('')}</ul>` : ''}
+        ${trial ? `<div class="tries"><span class="eyebrow">Example actions, acting for ${esc(who)}</span>${trial}</div>` : ''}
+        <details><summary class="fineprint" style="cursor:pointer">Show the policy that will be saved</summary><pre class="policy">${esc(policyText(r))}</pre></details>
+        <div class="btn-row"><button class="btn primary" type="button" id="add-rule">Add rule</button><button class="btn" type="button" id="edit-rule">Change the wording</button></div>
+      </div></div>`;
+  }
+
+  function renderPeople() {
+    $('people').innerHTML = PEOPLE.map(p => `<button class="person" type="button" data-person="${p.id}" aria-pressed="${p.id === previewId}"><span class="avatar" aria-hidden="true">${p.init}</span><span>${p.name}<small>${p.role}</small></span></button>`).join('');
+  }
+
+  function renderPreview() {
+    const p = PEOPLE.find(x => x.id === previewId);
+    let html = '';
+    if (!personAllowed(p)) {
+      html += `<div class="cant">${p.first} isn't on Dana's sales team, so ${p.first} can't use this agent. To see what it could do for ${p.first}, set <b>Who can use it</b> to <b>Everyone at Larkspur</b>. As the CFO, ${p.first} can open the Finance drive and the leadership team's calendars.</div>`;
+      $('preview').innerHTML = html;
+      return;
+    }
+    const e = effective(p);
+    const lbl = (cap) => CAPS.find(c => c.id === cap).options.find(o => o.v === state[cap]).label;
+    const off = v => state[v] === 'none';
+    const rows = [
+      ['Read accounts', lbl('crmRead'), `${fmt(p.crmRead)} accounts${p.crmOwned ? `, owns ${fmt(p.crmOwned)}` : ''}`, off('crmRead') ? 'Nothing' : `${fmt(e.crmRead)} accounts`, off('crmRead')],
+      ['Change accounts', lbl('crmWrite'), p.crmEdit ? `${fmt(p.crmEdit)} accounts` : 'None', e.crmEdit ? `${fmt(e.crmEdit)} accounts, ${state.crmWrite === 'notes' ? 'notes and next steps' : 'any field'}` : 'Nothing', !e.crmEdit],
+      ['Read email', lbl('mailRead'), 'Own mailbox', off('mailRead') ? 'Nothing' : state.mailRead === 'customer' ? `Customer threads in ${p.first}'s mailbox` : `All of ${p.first}'s mailbox`, off('mailRead')],
+      ['Send email', lbl('mailSend'), 'Anyone', { none: 'Nothing', draft: `Drafts for ${p.first} to send`, internal: 'Colleagues only', any: 'Anyone' }[state.mailSend], off('mailSend')],
+      ['Calendar', lbl('cal'), p.calOthers ? `Own and ${p.calOthersWho}'s` : 'Own calendar only', { none: 'Nothing', freebusy: 'See free and busy times', own: `${p.first}'s calendar`, full: p.calOthers ? `${p.first}'s and ${p.calOthersWho}'s` : `${p.first}'s calendar` }[state.cal], off('cal')],
+      ['Open files', lbl('files'), p.drives ? `${p.drives} shared drives, ${fmt(p.files)} files` : `Playbook folder, ${PLAYBOOK} files`, off('files') ? 'Nothing' : `${fmt(e.files)} files${state.files === 'all' && p.finance ? ', including Finance' : ''}`, off('files')]
+    ];
+    html += `<div class="eff-wrap"><table class="eff"><thead><tr><th scope="col">Access</th><th scope="col">You allow the agent</th><th scope="col">${p.first} can</th><th scope="col">So, acting for ${p.first}, it can</th></tr></thead><tbody>
+      ${rows.map(r => `<tr><th scope="row">${r[0]}</th><td>${r[1]}</td><td>${r[2]}</td><td class="final${r[4] ? ' cap-off' : ''}">${r[3]}</td></tr>`).join('')}
+      </tbody></table></div>`;
+    html += `<div class="acts"><span class="eyebrow" style="margin-bottom:6px">Example actions, acting for ${p.first}</span>${ACTIONS.map(a => {
+      const res = evaluate(a, p);
+      return `<div class="act"><span class="act-name">${esc(a.label)}</span><span class="res ${res.k}">${esc(res.label)}</span><span class="act-why">${esc(res.why)}</span></div>`;
+    }).join('')}</div>`;
+    $('preview').innerHTML = html;
+  }
+
+  function renderAll() {
+    renderReach(); renderRules(); renderPreview(); renderPeople();
+  }
+
+  // ---------- Decision sheet ----------
+  function openSheet(mode) {
+    const req = requestedState();
+    const all = [WHO, EXPIRY, ...CAPS];
+    const rowsHTML = all.map(def => {
+      const was = def.options.find(o => o.v === req[def.id]).label;
+      const now = def.options.find(o => o.v === state[def.id]).label;
+      return `<tr><th scope="row">${def.title}</th><td>${was === now ? `<span class="same">${now} (as requested)</span>` : `<s>${was}</s><br>${now}`}</td></tr>`;
+    }).join('');
+    const r0 = reach(req, []), r1 = reach();
+    const risk0 = riskOf(req, []), risk1 = riskOf();
+    const ba = (k, a, b) => `<div class="ba"><span class="k">${k}</span><span class="v">${a === b ? b : `<s>${a}</s>${b}`}</span></div>`;
+    const sheet = $('sheet');
+    if (mode === 'approve') {
+      const changes = all.filter(d => req[d.id] !== state[d.id]).length;
+      sheet.innerHTML = `<div class="sheet-head"><span class="eyebrow">AR-2291 · Renewal agent</span><h2 id="sheet-h">${changes || rules.length ? 'Approve with changes' : 'Approve as requested'}</h2><p class="muted">Marcus gets this summary, and it's saved to the audit log.</p></div>
+        <div class="sheet-body">
+          <div class="before-after">${ba('Risk', risk0.label, risk1.label)}${ba('Accounts it could read', fmt(r0.crmRead), fmt(r1.crmRead))}${ba('Mailboxes', fmt(r0.mailboxes), fmt(r1.mailboxes))}${ba('Who it could email', r0.send, r1.send)}${ba('Files', fmt(r0.files), fmt(r1.files))}</div>
+          <table class="diff"><thead><tr><th scope="col">Access</th><th scope="col">Requested → granted</th></tr></thead><tbody>${rowsHTML}</tbody></table>
+          <div><span class="eyebrow">Guardrails</span>${rules.length ? `<ul class="rules" style="margin-top:8px">${rules.map(r => `<li class="rule"><span class="rule-text">${esc(r.text)}</span><span class="rule-sum">${esc(ruleSummary(r))}</span></li>`).join('')}</ul>` : '<p class="muted" style="margin-top:6px">None. The agent won’t ask anyone before acting.</p>'}</div>
+          <div class="composer" style="margin-top:0"><label for="note">Note to Marcus</label><textarea id="note">Approved for the sales team with narrower access. The agent drafts and sends renewal emails but asks Dana first for anything going outside Larkspur. Let me know if it needs more for the renewal job.</textarea></div>
+        </div>
+        <div class="sheet-foot"><button class="btn" type="button" data-close>Back to editing</button><button class="btn primary" type="button" id="confirm-approve">Approve and notify Marcus</button></div>`;
+    } else {
+      sheet.innerHTML = `<div class="sheet-head"><span class="eyebrow">AR-2291 · Renewal agent</span><h2 id="sheet-h">Deny this request</h2><p class="muted">The agent gets no access. Marcus can change the request and send it again.</p></div>
+        <div class="sheet-body"><div class="composer" style="margin-top:0"><label for="deny-note">Reason for Marcus</label><textarea id="deny-note">This asks for much more than the renewal job needs. Please narrow it to the sales team's accounts, customer threads and the person's own calendar, and drop file access.</textarea></div></div>
+        <div class="sheet-foot"><button class="btn" type="button" data-close>Back to editing</button><button class="btn primary" type="button" id="confirm-deny">Deny and notify Marcus</button></div>`;
+    }
+    $('scrim').hidden = false;
+    document.body.style.overflow = 'hidden';
+    const first = sheet.querySelector('textarea');
+    if (first) first.focus();
+  }
+  function closeSheet() { $('scrim').hidden = true; document.body.style.overflow = ''; }
+
+  function decide(kind) {
+    decided = kind;
+    closeSheet();
+    const pill = $('status-pill');
+    if (kind === 'approved') {
+      const risk = riskOf();
+      pill.className = 'pill ok'; pill.textContent = 'Approved'; syncBar();
+      $('outcome').innerHTML = `<div class="done" role="status"><h2>Approved. Marcus has been notified.</h2><p>The Renewal agent can now act for ${state.who === 'team' ? 'Dana’s sales team' : 'everyone at Larkspur'} with ${risk.label.toLowerCase()} risk access${state.expiry === 'never' ? '' : `, ending in ${state.expiry} days`}. ${rules.length ? `${rules.length} guardrail${rules.length > 1 ? 's' : ''} saved.` : ''} The decision is in the audit log as AR-2291.</p><div class="btn-row"><button class="btn" type="button" id="restart">Start the demo again</button></div></div>`;
+    } else {
+      pill.className = 'pill no'; pill.textContent = 'Denied'; syncBar();
+      $('outcome').innerHTML = `<div class="done denied" role="status"><h2>Denied. Marcus has been notified.</h2><p>The Renewal agent has no access. The decision and your reason are in the audit log as AR-2291.</p><div class="btn-row"><button class="btn" type="button" id="restart">Start the demo again</button></div></div>`;
+    }
+    $('outcome').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  function syncBar() {
+    const a = $('status-pill'), b = $('bar-pill');
+    b.className = a.className; b.textContent = a.textContent;
+    $('bar-approve').hidden = !!decided;
+  }
+  function measureTop() { document.documentElement.style.setProperty('--top-h', $('top').offsetHeight + 'px'); }
+  if ('ResizeObserver' in window) new ResizeObserver(measureTop).observe($('top')); else addEventListener('resize', measureTop);
+  measureTop();
+
+  function reset() {
+    state = requestedState(); rules = []; draft = null; decided = null; lastReach = null;
+    $('outcome').innerHTML = '';
+    const pill = $('status-pill'); pill.className = 'pill wait'; pill.textContent = 'Waiting for your review'; syncBar();
+    $('rule-input').value = '';
+    renderAccess(); renderInterp(); renderAll();
+  }
+
+  // ---------- Events ----------
+  document.addEventListener('change', e => {
+    const t = e.target;
+    if (t.type === 'radio' && t.name in state) {
+      state[t.name] = t.value;
+      if (draft && draft.rule) draft = interpret(draft.rule.text);
+      renderReach(); renderPreview(); renderInterp();
+    }
+  });
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('button');
+    if (!t) { if (e.target === $('scrim')) closeSheet(); return; }
+    if (t.dataset.sug !== undefined) { $('rule-input').value = SUGGESTIONS[+t.dataset.sug]; draft = interpret($('rule-input').value); renderInterp(); return; }
+    if (t.id === 'interpret') { draft = interpret($('rule-input').value); renderInterp(); return; }
+    if (t.id === 'add-rule' && draft && draft.rule) { rules.push(draft.rule); draft = null; $('rule-input').value = ''; renderInterp(); renderAll(); return; }
+    if (t.id === 'edit-rule') { $('rule-input').focus(); return; }
+    if (t.dataset.remove !== undefined) { rules.splice(+t.dataset.remove, 1); renderAll(); renderInterp(); return; }
+    if (t.dataset.person) { previewId = t.dataset.person; renderPeople(); renderPreview(); renderInterp(); return; }
+    if (t.id === 'approve' || t.id === 'bar-approve') { openSheet('approve'); return; }
+    if (t.id === 'deny') { openSheet('deny'); return; }
+    if (t.dataset.close !== undefined) { closeSheet(); return; }
+    if (t.id === 'confirm-approve') { decide('approved'); return; }
+    if (t.id === 'confirm-deny') { decide('denied'); return; }
+    if (t.id === 'reset' || t.id === 'restart') { reset(); window.scrollTo({ top: 0 }); return; }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('scrim').hidden) closeSheet();
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && document.activeElement === $('rule-input')) { draft = interpret($('rule-input').value); renderInterp(); }
+  });
+
+  renderAsked(); renderAccess(); renderSugs(); renderInterp(); renderAll();
+})();
+</script>
+
+</body>
+</html>

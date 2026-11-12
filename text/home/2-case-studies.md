@@ -5,6 +5,14 @@
 menu label: Case studies
 title: Case studies
 ---
+## [Reviewing an AI agent's access request](work/agent-access-review/)
+
+![](thumb-access-review.webp)
+
+Concept project · Designed and built
+
+A working prototype for the admin who approves an AI agent's access. It shows what the agent could reach in plain numbers, what it could do for each person it acts for, and when it has to ask a person first.
+
 ## [Designing for uncertainty](work/designing-for-uncertainty/)
 
 ![](thumb-uncertainty.webp)

@@ -12,8 +12,8 @@ title: One design system for a growing product suite
 Role: Product designer on the design system: components, documentation, foundations
 Team: Two principal designers, then dozens of designers across product teams
 Outcome: Supported 12+ desktop and mobile products and brought acquired products into the suite
-next title: Designing for uncertainty
-next link: work/designing-for-uncertainty/
+next title: Reviewing an AI agent's access request
+next link: work/agent-access-review/
 ---
 ## Summary
 
